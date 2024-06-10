@@ -55,8 +55,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-const pages = ["Home", "About", "Contact", "Profile"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const pages = ["Home", "About", "Contact"];
+const settings = ["Profile", "Account", "Logout"];
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
