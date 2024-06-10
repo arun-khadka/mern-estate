@@ -127,10 +127,10 @@ const Header = () => {
       onClose={handleMobileMenuClose}
     >
       <List>
-        {pages.map((item) => (
-          <ListItem key={item} disablePadding>
+        {pages.map((page) => (
+          <ListItem key={page} disablePadding>
             <ListItemButton sx={{ textAlign: "center" }}>
-              <ListItemText primary={item} />
+              <ListItemText primary={page} />
             </ListItemButton>
           </ListItem>
         ))}
@@ -142,15 +142,6 @@ const Header = () => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" color="success">
         <Toolbar>
-          {/* <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
           <Typography
             variant="h6"
             noWrap
@@ -163,14 +154,14 @@ const Header = () => {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              {pages.map((item) => (
+              {pages.map((page) => (
                 <Button
-                  key={item}
-                  sx={{ color: "#fff", fontSize: 14, fontWeight: 500 }}
+                  key={page}
+                  sx={{ color: "#fff", fontSize: 16, fontWeight: 500, mx: 1.1 }}
                   component={RouterLink}
-                  to={item === "Home" ? "/" : `/${item.toLowerCase()}`}
+                  to={page === "Home" ? "/" : `/${page.toLowerCase()}`}
                 >
-                  {item}
+                  {page}
                 </Button>
               ))}
             </Box>
