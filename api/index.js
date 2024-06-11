@@ -1,9 +1,12 @@
-const express = require("express");
-const { mongo, mongoose } = require("mongoose");
-const app = express();
+import express from "express";
+import mongoose from "mongoose";
+import userRouter from "./routes/user.route.js";
+import dotenv from "dotenv";
 
-const dotenv = require("dotenv");
+const app = express();
 dotenv.config();
+
+app.use("/api/user", userRouter);
 
 const port = process.env.PORT;
 
@@ -16,8 +19,9 @@ mongoose
     console.log("Error!");
   });
 
+//test api
 app.get("/", (req, res) => {
-  res.send("Hello world");
+res.send("Hello world!");
 });
 
 app.listen(port, () => {
