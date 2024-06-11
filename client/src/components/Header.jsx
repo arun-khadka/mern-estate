@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import AppBar from "@mui/material/AppBar";
@@ -87,6 +87,21 @@ const Header = () => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const [showBorder, setShowBorder] = useState(false);
+
+  // useEffect(() => {
+  //   const handleScroll = () => {
+  //     const currentScrollPos = window.scrollY;
+  //     if (currentScrollPos > 0) {
+  //       setShowBorder(true);
+  //     } else {
+  //       setShowBorder(false);
+  //     }
+  //   };
+  //   window.addEventListener("scroll", handleScroll);
+  //   return () => window.removeEventListener("scroll", handleScroll);
+  // }, []);
+
   const menuId = "primary-search-account-menu";
   const renderMenu = (
     <Menu
@@ -154,8 +169,20 @@ const Header = () => {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              <div
+                className={`${
+                  showBorder
+                    ? "absolute bottom-0 left-0 right-0 h-2 bg-slate-950 rounded-md"
+                    : ""
+                } ${
+                  showBorder
+                    ? "after:content-[''] after:absolute after:h-[7px] after:bg-pink-600 after:rounded-md after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center"
+                    : ""
+                }`}
+              ></div>
               {pages.map((page) => (
                 <Button
+                  className={`relative text-lg w-fit block after:rounded-md aria-[current=page]:text-pink-500 after:block after:content-[''] after:absolute after:h-[4px] hover:text-teal-60 after:bg-pink-600 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center active:text-pink-500}`}
                   key={page}
                   sx={{ color: "#fff", fontSize: 16, fontWeight: 500, mx: 1.1 }}
                   component={RouterLink}
