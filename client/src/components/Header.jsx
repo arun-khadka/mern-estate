@@ -19,12 +19,21 @@ import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 14,
-  backgroundColor: alpha(theme.palette.common.white, 0.15),
+  border: `4px ${theme.palette.common.white}`,
+  boxShadow: `0 1px 3px ${alpha(theme.palette.common.black, 0.2)}`, // Box shadow for shadowed effect
+  backgroundColor: alpha(theme.palette.common.white, 0.0),
   "&:hover": {
-    backgroundColor: alpha(theme.palette.common.white, 0.25),
+    backgroundColor: alpha(theme.palette.common.white, 0.1),
+    border: `1px solid ${theme.palette.primary.main}`, // Change border color on hover
+    boxShadow: `0 2px 4px ${alpha(theme.palette.common.black, 0.2)}`, // Increase shadow on hover
+  },
+  "&.Mui-focused": {
+    border: `1px solid ${theme.palette.primary.main}`, // Change border color on focus
+    boxShadow: `0 2px 4px ${alpha(theme.palette.common.black, 0.3)}`, // Increase shadow on focus
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
+  color: "#263238",
   width: "100%",
   [theme.breakpoints.up("sm")]: {
     marginLeft: theme.spacing(3),
@@ -46,6 +55,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: "inherit",
   "& .MuiInputBase-input": {
     padding: theme.spacing(1, 1, 1, 0),
+    color: "white",
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create("width"),
@@ -55,7 +65,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-const pages = ["Home", "About", "Contact"];
+const pages = ["Home", "About", "Signin", "SignUp"];
 const settings = ["Profile", "Account", "Logout"];
 
 const Header = () => {
@@ -155,13 +165,13 @@ const Header = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="static" color="success">
+      <AppBar position="fixed" color="tertiary">
         <Toolbar>
           <Typography
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: "none", sm: "block" } }}
+            sx={{ display: { xs: "none", sm: "block", fontWeight: "700" } }}
           >
             MyEstate
           </Typography>
@@ -176,13 +186,14 @@ const Header = () => {
                     : ""
                 } ${
                   showBorder
-                    ? "after:content-[''] after:absolute after:h-[7px] after:bg-pink-600 after:rounded-md after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center"
+                    ? "after:content-[''] after:absolute after:h-[7px] after:bg-slate-900 after:rounded-md after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-500 after:origin-center"
                     : ""
                 }`}
               ></div>
               {pages.map((page) => (
                 <Button
-                  className={`relative text-lg w-fit block after:rounded-md aria-[current=page]:text-pink-500 after:block after:content-[''] after:absolute after:h-[4px] hover:text-teal-60 after:bg-pink-600 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-300 after:origin-center active:text-pink-500}`}
+                  disableTouchRipple
+                  className={`relative text-lg w-fit block after:rounded-md aria-[current=page]:text-slate-800 after:block after:content-[''] after:absolute after:h-[4px] hover:text-teal-60 after:bg-slate-800 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-500 after:origin-left after:bottom-[1px] active:text-slate-800}`}
                   key={page}
                   sx={{ color: "#fff", fontSize: 16, fontWeight: 500, mx: 1.1 }}
                   component={RouterLink}
