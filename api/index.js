@@ -1,12 +1,16 @@
 import express from "express";
 import mongoose from "mongoose";
-import userRouter from "./routes/user.route.js";
 import dotenv from "dotenv";
+import userRouter from "./routes/user.route.js";
+import authRouter from "./routes/auth.route.js";
 
 const app = express();
+app.use(express.json());
+
 dotenv.config();
 
 app.use("/api/user", userRouter);
+app.use("/api/auth", authRouter);
 
 const port = process.env.PORT;
 
@@ -16,13 +20,8 @@ mongoose
     console.log("Connected to MongoDB!");
   })
   .catch((err) => {
-    console.log("Error!");
+    console.log("Error!", err);
   });
-
-//test api
-app.get("/", (req, res) => {
-res.send("Hello world!");
-});
 
 app.listen(port, () => {
   console.log(`Server is on ${port}`);
