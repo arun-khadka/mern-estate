@@ -6,13 +6,13 @@ import {
   TextField,
   FormControlLabel,
   Checkbox,
-  Link,
+  Link as MuiLink,
   Grid,
   Typography,
   Container,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
   "@global": {
@@ -21,14 +21,18 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   paper: {
-    marginTop: theme.spacing(8),
+    marginTop: theme.spacing(9),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
   },
   avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.info.main,
+    margin: theme.spacing(2),
+    // backgroundColor: theme.palette.info.main,
+    backgroundColor: "#8e24aa",
+    "&:hover": {
+      backgroundColor: "#7b1fa2",
+    },
   },
   form: {
     width: "100%", // Fix IE 11 issue.
@@ -36,8 +40,57 @@ const useStyles = makeStyles((theme) => ({
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
+    backgroundColor: "#8e24aa",
+    "&:hover": {
+      backgroundColor: "#7b1fa2",
+    },
   },
 }));
+
+const CustomCheckbox = withStyles({
+  root: {
+    color: "gray", // Custom color when not checked
+    "&:hover": {
+      color: "#7b1fa2", // Custom color when hovered
+    },
+    "&$checked": {
+      color: "#7b1fa2", // Custom color when checked
+    },
+  },
+  checked: {},
+})(Checkbox);
+
+const CustomLink = withStyles({
+  root: {
+    color: "#7b1fa2", // Custom default link color
+    "&:hover": {
+      color: "#7b1fa2", // Custom link hover color
+      textDecoration: "underline", // Optional: Add underline on hover
+    },
+  },
+})(MuiLink);
+
+const CssTextField = withStyles({
+  root: {
+    "& label.Mui-focused": {
+      color: "#7b1fa2", // Custom label color when focused
+    },
+    "& .MuiInput-underline:after": {
+      borderBottomColor: "#7b1fa2", // Custom underline color when focused
+    },
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: "gray", // Default border color
+      },
+      "&:hover fieldset": {
+        borderColor: "#7b1fa2", // Border color when hovered
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "#7b1fa2", // Border color when focused
+      },
+    },
+  },
+})(TextField);
 
 const Signin = () => {
   const classes = useStyles();
@@ -55,7 +108,7 @@ const Signin = () => {
         <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField
+              <CssTextField
                 variant="outlined"
                 required
                 fullWidth
@@ -66,7 +119,7 @@ const Signin = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+              <CssTextField
                 variant="outlined"
                 required
                 fullWidth
@@ -77,7 +130,7 @@ const Signin = () => {
                 autoComplete="current-password"
               />
               <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
+                control={<CustomCheckbox value="remember" color="primary" />}
                 label="Remember me"
               />
             </Grid>
@@ -94,14 +147,14 @@ const Signin = () => {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              <CustomLink href="#" variant="body2">
                 Forgot password?
-              </Link>
+              </CustomLink>
             </Grid>
             <Grid item>
-              <Link href="/signup" variant="body2">
+              <CustomLink href="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
-              </Link>
+              </CustomLink>
             </Grid>
           </Grid>
         </form>
