@@ -130,7 +130,13 @@ const Signin = () => {
                 autoComplete="current-password"
               />
               <FormControlLabel
-                control={<CustomCheckbox value="remember" color="primary" />}
+                control={
+                  <CustomCheckbox
+                    value="remember"
+                    color="primary"
+                    disableRipple
+                  />
+                }
                 label="Remember me"
               />
             </Grid>
