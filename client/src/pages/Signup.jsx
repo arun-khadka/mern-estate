@@ -11,9 +11,13 @@ import {
   CircularProgress,
 } from "@material-ui/core";
 import { Link, useNavigate } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-// import LoadingButton from '@mui/lab/LoadingButton';``
-// import SendIcon from '@mui/icons-material/Send';
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
@@ -41,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: theme.spacing(3, 0, 1),
     backgroundColor: "#8e24aa",
     "&:hover": {
       backgroundColor: "#7b1fa2",
@@ -67,6 +71,17 @@ const CssTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottomColor: "#7b1fa2", // Custom underline color when focused
     },
+    "& .MuiFilledInput-root": {
+      "&:before": {
+        borderBottomColor: "gray", // Default border color
+      },
+      "&:hover :not(.Mui-disabled):before": {
+        borderBottomColor: "#7b1fa2", // Border color when hovered
+      },
+      "&:after": {
+        borderBottomColor: "#7b1fa2", // Border color when focused
+      },
+    },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
         borderColor: "gray", // Default border color
@@ -87,6 +102,13 @@ const Signup = () => {
   const [error, setError] = useState(null);
   const [formData, setFormData] = React.useState({});
   const [loading, setLoading] = React.useState(false);
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   const handleChange = (e) => {
     setFormData({
@@ -112,14 +134,17 @@ const Signup = () => {
       if (data.success === false) {
         setLoading(false);
         setError(data.message);
+        toast.error(data.message);
         return;
       }
       setLoading(false);
       setError(null);
+      toast.success("Signup successfull!");
       navigate("/signin");
     } catch (error) {
       setLoading(false);
       setError(error.message);
+      toast.error(error.message);
     }
   };
 
@@ -138,7 +163,7 @@ const Signup = () => {
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <CssTextField
-                variant="outlined"
+                variant="filled"
                 required
                 fullWidth
                 id="username"
@@ -150,7 +175,7 @@ const Signup = () => {
             </Grid>
             <Grid item xs={12}>
               <CssTextField
-                variant="outlined"
+                variant="filled"
                 required
                 fullWidth
                 id="email"
@@ -162,15 +187,29 @@ const Signup = () => {
             </Grid>
             <Grid item xs={12}>
               <CssTextField
-                variant="outlined"
+                variant="filled"
                 required
                 fullWidth
-                name="password"
-                label="Password"
-                type="password"
                 id="password"
-                autoComplete="password"
+                label="Password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
                 onChange={handleChange}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
             </Grid>
           </Grid>
@@ -180,9 +219,10 @@ const Signup = () => {
             disabled={loading}
             variant="contained"
             color="primary"
+            size="large"
             className={classes.submit}
           >
-            {loading ? <CircularProgress size={24} /> : "Sign up"}
+            {loading ? <CircularProgress aria-describedby="aria-busy" size={24} /> : "Sign up"}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
@@ -192,8 +232,20 @@ const Signup = () => {
             </Grid>
           </Grid>
         </form>
-        <div className="text-red-500">{error}</div>
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
       </div>
+      {error && <p className="text-red-600">{error}</p>}
     </Container>
   );
 };

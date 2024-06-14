@@ -7,6 +7,7 @@ import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Header from "./components/Header";
+import Error from "./pages/Error";
 
 const theme = createTheme({
   palette: {
@@ -34,6 +35,7 @@ function App() {
           <Route path="signin" element={<Signin />} />
           <Route path="signup" element={<Signup />} />
           <Route path="profile" element={<Profile />} />
+          <Route path="*" element={<Error />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

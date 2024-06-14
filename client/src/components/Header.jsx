@@ -19,12 +19,12 @@ import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
   borderRadius: 14,
-  border: `4px ${theme.palette.common.white}`,
+  border: `1px ${theme.palette.common.white}`,
   boxShadow: `0 1px 3px ${alpha(theme.palette.common.black, 0.2)}`, // Box shadow for shadowed effect
   backgroundColor: alpha(theme.palette.common.white, 0.0),
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.1),
-    border: `1px solid ${theme.palette.primary.main}`, // Change border color on hover
+    // border: `1px solid ${theme.palette.primary.main}`, // Change border color on hover
     boxShadow: `0 2px 4px ${alpha(theme.palette.common.black, 0.2)}`, // Increase shadow on hover
   },
   "&.Mui-focused": {
@@ -33,7 +33,6 @@ const Search = styled("div")(({ theme }) => ({
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
-  color: "#263238",
   width: "100%",
   [theme.breakpoints.up("sm")]: {
     marginLeft: theme.spacing(3),
@@ -65,7 +64,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-const pages = ["Home", "About", "Signin", "SignUp"];
+const pages = ["Home", "About", "Signin"];
 const settings = ["Profile", "Account", "Logout"];
 
 const Header = () => {
@@ -165,7 +164,7 @@ const Header = () => {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <AppBar position="fixed" color="tertiary">
+      <AppBar position="fixed" sx={{ backgroundColor: "#7b1fa2" }}>
         <Toolbar>
           <Typography
             variant="h6"
@@ -177,34 +176,6 @@ const Header = () => {
           </Typography>
 
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: "none", md: "flex" } }}>
-            <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              <div
-                className={`${
-                  showBorder
-                    ? "absolute bottom-0 left-0 right-0 h-2 bg-slate-950 rounded-md"
-                    : ""
-                } ${
-                  showBorder
-                    ? "after:content-[''] after:absolute after:h-[7px] after:bg-slate-900 after:rounded-md after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-500 after:origin-center"
-                    : ""
-                }`}
-              ></div>
-              {pages.map((page) => (
-                <Button
-                  disableTouchRipple
-                  className={`relative text-lg w-fit block after:rounded-md aria-[current=page]:text-slate-800 after:block after:content-[''] after:absolute after:h-[4px] hover:text-teal-60 after:bg-slate-800 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-500 after:origin-left after:bottom-[1px] active:text-slate-800}`}
-                  key={page}
-                  sx={{ color: "#fff", fontSize: 16, fontWeight: 500, mx: 1.1 }}
-                  component={RouterLink}
-                  to={page === "Home" ? "/" : `/${page.toLowerCase()}`}
-                >
-                  {page}
-                </Button>
-              ))}
-            </Box>
-          </Box>
-          <Box sx={{ flexGrow: 1 }} />
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
@@ -214,6 +185,41 @@ const Header = () => {
               inputProps={{ "aria-label": "search" }}
             />
           </Search>
+
+          <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ display: { xs: "none", md: "flex" } }}>
+            <Box sx={{ display: { xs: "none", sm: "block" } }}>
+              <div
+                className={`${
+                  showBorder
+                    ? "absolute bottom-0 left-0 right-0 h-2 bg-slate-950 rounded-md"
+                    : ""
+                } ${
+                  showBorder
+                    ? "after:content-[''] after:absolute after:h-[7px] after:bg-purple-500 after:rounded-md after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-500 after:origin-center"
+                    : ""
+                }`}
+              ></div>
+              {pages.map((page) => (
+                <Button
+                  disableTouchRipple
+                  className={`relative text-lg w-fit block after:rounded-md aria-[current=page]:text-purple-500 after:block after:content-[''] after:absolute after:h-[4px] hover:text-teal-500 after:bg-purple-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-500 after:origin-left after:bottom-[1px] active:text-purple-500}`}
+                  key={page}
+                  sx={{
+                    color: "#FFFFFF",
+                    fontSize: 16,
+                    fontWeight: 500,
+                    mx: 1.1,
+                  }}
+                  component={RouterLink}
+                  to={page === "Home" ? "/" : `/${page.toLowerCase()}`}
+                >
+                  {page}
+                </Button>
+              ))}
+            </Box>
+          </Box>
+
           <Box sx={{ display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
