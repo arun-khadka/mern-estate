@@ -152,7 +152,12 @@ const Header = () => {
     >
       <List>
         {pages.map((page) => (
-          <ListItem key={page} disablePadding>
+          <ListItem
+            key={page}
+            disablePadding
+            component={RouterLink}
+            to={page === "Home" ? "/" : `/${page.toLowerCase()}`}
+          >
             <ListItemButton sx={{ textAlign: "center" }}>
               <ListItemText primary={page} />
             </ListItemButton>
@@ -235,7 +240,10 @@ const Header = () => {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar
+                  alt="image"
+                  src="https://cdn.ontourmedia.io/gunsnroses/site_v2/animations/gnr_loop_logo_01.jpg"
+                />
               </IconButton>
             </Tooltip>
             <Menu

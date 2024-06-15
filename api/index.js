@@ -30,7 +30,7 @@ mongoose
     console.log("Connected to MongoDB!");
   })
   .catch((err) => {
-    console.log("Error!", err);
+    console.log("Database not connected!", err);
   });
 
 app.listen(port, () => {

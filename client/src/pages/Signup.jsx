@@ -103,6 +103,7 @@ const Signup = () => {
   const [formData, setFormData] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [fieldErrors, setFieldErrors] = React.useState({});
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -119,6 +120,17 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      // setFieldErrors({
+      //   email: !formData.email ? "Email is required" : null,
+      //   password: !formData.password ? "Password is required" : null,
+      // });
+      toast.error("Email and password are required.");
+
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await fetch("api/auth/signup", {
@@ -131,15 +143,23 @@ const Signup = () => {
       const data = await res.json();
       console.log(data);
 
-      if (data.success === false) {
+      if (!data.success) {
         setLoading(false);
-        setError(data.message);
-        toast.error(data.message);
+        if (data.errors) {
+          let errors = {};
+          data.errors.forEach((error) => {
+            errors[error.param] = error.msg;
+            toast.error(error.msg);
+          });
+          setFieldErrors(errors);
+        } else {
+          toast.error(data.message);
+        }
         return;
       }
       setLoading(false);
       setError(null);
-      toast.success("Signup successfull!");
+      toast.success("Signup successful!");
       navigate("/signin");
     } catch (error) {
       setLoading(false);
@@ -171,6 +191,8 @@ const Signup = () => {
                 name="username"
                 autoComplete="username"
                 onChange={handleChange}
+                helperText={fieldErrors.username}
+                error={!!fieldErrors.username}
               />
             </Grid>
             <Grid item xs={12}>
@@ -183,6 +205,8 @@ const Signup = () => {
                 name="email"
                 autoComplete="email"
                 onChange={handleChange}
+                helperText={fieldErrors.email}
+                error={!!fieldErrors.email}
               />
             </Grid>
             <Grid item xs={12}>
@@ -210,6 +234,8 @@ const Signup = () => {
                     </InputAdornment>
                   ),
                 }}
+                helperText={fieldErrors.password}
+                error={!!fieldErrors.password}
               />
             </Grid>
           </Grid>
@@ -222,11 +248,15 @@ const Signup = () => {
             size="large"
             className={classes.submit}
           >
-            {loading ? <CircularProgress aria-describedby="aria-busy" size={24} /> : "Sign up"}
+            {loading ? (
+              <CircularProgress aria-describedby="aria-busy" size={24} />
+            ) : (
+              "Sign up"
+            )}
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <CustomLink href="/signin" variant="body2">
+              <CustomLink component={Link} to="/signin" variant="body2">
                 Already have an account? Sign in
               </CustomLink>
             </Grid>
@@ -245,7 +275,6 @@ const Signup = () => {
           theme="colored"
         />
       </div>
-      {error && <p className="text-red-600">{error}</p>}
     </Container>
   );
 };

@@ -9,6 +9,7 @@ import {
   Grid,
   Typography,
   Container,
+  CircularProgress,
 } from "@material-ui/core";
 import { Link, useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
@@ -116,6 +117,7 @@ const Signin = () => {
   const [formData, setFormData] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
+  const [fieldErrors, setFieldErrors] = React.useState({});
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -144,15 +146,23 @@ const Signin = () => {
       const data = await res.json();
       console.log(data);
 
-      if (data.success === false) {
+      if (!data.success) {
         setLoading(false);
-        setError(data.message);
-        toast.error(data.message);
+        if (data.errors) {
+          let errors = {};
+          data.errors.forEach((error) => {
+            errors[error.param] = error.msg;
+            toast.error(error.msg);
+          });
+          setFieldErrors(errors);
+        } else {
+          toast.error(data.message);
+        }
         return;
       }
       setLoading(false);
       setError(null);
-      toast.success("Signin successfull!");
+      toast.success("Signin successful!");
       navigate("/");
     } catch (error) {
       setLoading(false);
@@ -185,6 +195,8 @@ const Signin = () => {
                 name="email"
                 autoComplete="email"
                 onChange={handleChange}
+                helperText={fieldErrors.email}
+                error={!!fieldErrors.email}
               />
             </Grid>
             <Grid item xs={12}>
@@ -212,6 +224,8 @@ const Signin = () => {
                     </InputAdornment>
                   ),
                 }}
+                helperText={fieldErrors.password}
+                error={!!fieldErrors.password}
               />
 
               {/* <FormControlLabel
@@ -240,12 +254,16 @@ const Signin = () => {
           </Button>
           <Grid container>
             <Grid item xs>
-              <CustomLink href="#" variant="body2">
+              <CustomLink
+                component={Link}
+                to="/forgot-password"
+                variant="body2"
+              >
                 Forgot password?
               </CustomLink>
             </Grid>
             <Grid item>
-              <CustomLink href="/signup" variant="body2">
+              <CustomLink component={Link} to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </CustomLink>
             </Grid>
