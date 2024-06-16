@@ -34,10 +34,11 @@ function App() {
             <Route index element={<Home />} />
             <Route path="about" element={<About />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="signin" element={<Signin />} />
+            <Route path="signup" element={<Signup />} />
             <Route path="*" element={<Error />} />
           </Route>
-          <Route path="signin" element={<Signin />} />
-          <Route path="signup" element={<Signup />} />
+          
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

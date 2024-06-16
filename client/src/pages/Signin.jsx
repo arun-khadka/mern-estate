@@ -1,17 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
-  Avatar,
-  Button,
-  CssBaseline,
-  TextField,
-  Checkbox,
-  Link as MuiLink,
-  Grid,
-  Typography,
-  Container,
-  CircularProgress,
-} from "@material-ui/core";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+  Link,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
@@ -20,6 +12,22 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import {
+  Avatar,
+  Button,
+  CssBaseline,
+  TextField,
+  Grid,
+  Typography,
+  Container,
+  CircularProgress,
+} from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+} from "../redux/user/userSlice";
 
 const useStyles = makeStyles((theme) => ({
   "@global": {
@@ -53,19 +61,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CustomCheckbox = withStyles({
-  root: {
-    color: "gray", // Custom color when not checked
-    "&:hover": {
-      color: "#7b1fa2", // Custom color when hovered
-    },
-    "&$checked": {
-      color: "#7b1fa2", // Custom color when checked
-    },
-  },
-  checked: {},
-})(Checkbox);
-
 const CustomLink = withStyles({
   root: {
     color: "#7b1fa2", // Custom default link color
@@ -74,7 +69,7 @@ const CustomLink = withStyles({
       textDecoration: "underline", // Optional: Add underline on hover
     },
   },
-})(MuiLink);
+})(Link);
 
 const CssTextField = withStyles({
   root: {
@@ -125,17 +120,29 @@ const Signin = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const location = useLocation();
-  const [error, setError] = React.useState(null);
-  const [formData, setFormData] = React.useState({});
-  const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = React.useState(false);
-  const [fieldErrors, setFieldErrors] = React.useState({});
+  const dispatch = useDispatch();
+
+  const { loading, error, currentUser } = useSelector((state) => state.user);
+
+  const [formData, setFormData] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   useEffect(() => {
     if (location.state?.successMessage) {
       toast.success(location.state.successMessage);
     }
   }, [location.state]);
+
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+
+    if (currentUser) {
+      navigate("/", { state: { successMessage: "Login successful!" } });
+    }
+  }, [error, currentUser, navigate]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -157,40 +164,13 @@ const Signin = () => {
       setFieldErrors({
         email: !formData.email,
         password: !formData.password,
-        // email: !formData.email ? "Email is required" : null,
-        // password: !formData.password ? "Password is required" : null,
       });
-    }
-
-    // Client-side validation
-    let validationError = null;
-
-    switch (true) {
-      case !formData.email && !formData.password:
-        validationError = "All fields are required.";
-        break;
-
-      case !formData.email && !formData.password:
-        validationError = "Email and password are required.";
-        break;
-
-      case !formData.email:
-        validationError = "Email is required.";
-        break;
-      case !formData.password:
-        validationError = "Password is required.";
-        break;
-      default:
-        break;
-    }
-
-    if (validationError) {
-      toast.error(validationError);
+      toast.error("All fields are required.");
       return;
     }
 
     try {
-      setLoading(true);
+      dispatch(signInStart());
       const res = await fetch("api/auth/signin", {
         method: "POST",
         headers: {
@@ -199,10 +179,8 @@ const Signin = () => {
         body: JSON.stringify(formData),
       });
       const data = await res.json();
-      console.log(data);
 
       if (!data.success) {
-        setLoading(false);
         if (data.errors) {
           let errors = {};
           data.errors.forEach((error) => {
@@ -213,20 +191,16 @@ const Signin = () => {
         } else {
           toast.error(data.message);
         }
+        dispatch(signInFailure(data.message));
         return;
       }
-      setLoading(false);
-      setError(null);
-      toast.success("Signin successful!");
-      navigate("/", { state: { successMessage: "Login successful!" } });
+
+      dispatch(signInSuccess(data));
     } catch (error) {
-      setLoading(false);
-      setError(error.message);
       toast.error(error.message);
+      dispatch(signInFailure(error.message));
     }
   };
-
-  console.log(formData);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -284,20 +258,8 @@ const Signin = () => {
                 helperText={fieldErrors.password}
                 error={!!fieldErrors.password}
               />
-
-              {/* <FormControlLabel
-                control={
-                  <CustomCheckbox
-                    value="remember"
-                    color="primary"
-                    disableRipple
-                  />
-                }
-                label="Remember me"
-              /> */}
             </Grid>
           </Grid>
-
           <Button
             type="submit"
             fullWidth
@@ -311,16 +273,12 @@ const Signin = () => {
           </Button>
           <Grid container>
             <Grid item xs>
-              <CustomLink
-                component={Link}
-                to="/forgot-password"
-                variant="body2"
-              >
+              <CustomLink to="/forgot-password" variant="body2">
                 Forgot password?
               </CustomLink>
             </Grid>
             <Grid item>
-              <CustomLink component={Link} to="/signup" variant="body2">
+              <CustomLink to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </CustomLink>
             </Grid>
@@ -343,4 +301,4 @@ const Signin = () => {
   );
 };
 
-export default Signin;
+export default Signin

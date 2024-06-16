@@ -1,4 +1,13 @@
 import React, { useState } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 import {
   Avatar,
   Button,
@@ -10,16 +19,6 @@ import {
   Container,
   CircularProgress,
 } from "@material-ui/core";
-import { Link, useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import InputAdornment from "@mui/material/InputAdornment";
-import Visibility from "@mui/icons-material/Visibility";
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
-
 const useStyles = makeStyles((theme) => ({
   "@global": {
     body: {
@@ -142,43 +141,42 @@ const Signup = () => {
         // email: !formData.email ? "Email is required" : null,
         // password: !formData.password ? "Password is required" : null,
       });
-      return;
     }
 
     // Client-side validation
-    
-    // let validationError = null;
 
-    // switch (true) {
-    //   case !formData.username && !formData.email && !formData.password:
-    //     validationError = "All fields are required.";
-    //     break;
-    //   case !formData.username && !formData.password:
-    //     validationError = "Username and password are required.";
-    //     break;
-    //   case !formData.email && !formData.password:
-    //     validationError = "Email and password are required.";
-    //     break;
-    //   case !formData.username && !formData.email:
-    //     validationError = "Username and email are required.";
-    //     break;
-    //   case !formData.username:
-    //     validationError = "Username is required.";
-    //     break;
-    //   case !formData.email:
-    //     validationError = "Email is required.";
-    //     break;
-    //   case !formData.password:
-    //     validationError = "Password is required.";
-    //     break;
-    //   default:
-    //     break;
-    // }
+    let validationError = null;
 
-    // if (validationError) {
-    //   toast.error(validationError);
-    //   return;
-    // }
+    switch (true) {
+      case !formData.username && !formData.email && !formData.password:
+        validationError = "All fields are required.";
+        break;
+      case !formData.username && !formData.password:
+        validationError = "Username and password are required.";
+        break;
+      case !formData.email && !formData.password:
+        validationError = "Email and password are required.";
+        break;
+      case !formData.username && !formData.email:
+        validationError = "Username and email are required.";
+        break;
+      case !formData.username:
+        validationError = "Username is required.";
+        break;
+      case !formData.email:
+        validationError = "Email is required.";
+        break;
+      case !formData.password:
+        validationError = "Password is required.";
+        break;
+      default:
+        break;
+    }
+
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
 
     try {
       setLoading(true);
@@ -209,7 +207,9 @@ const Signup = () => {
       setLoading(false);
       setError(null);
       toast.success("Signup successful!");
-      navigate("/signin", { state: { successMessage: "Signup successful! Please log in." } });
+      navigate("/signin", {
+        state: { successMessage: "Signup successful! Please log in." },
+      });
     } catch (error) {
       setLoading(false);
       setError(error.message);
