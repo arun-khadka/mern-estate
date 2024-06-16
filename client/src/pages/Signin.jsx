@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Avatar,
   Button,
@@ -11,7 +11,7 @@ import {
   Container,
   CircularProgress,
 } from "@material-ui/core";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
@@ -35,7 +35,6 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(2),
-    // backgroundColor: theme.palette.info.main,
     backgroundColor: "#8e24aa",
     "&:hover": {
       backgroundColor: "#7b1fa2",
@@ -95,6 +94,12 @@ const CssTextField = withStyles({
       "&:after": {
         borderBottomColor: "#7b1fa2", // Border color when focused
       },
+      "&.Mui-error:before": {
+        borderBottomColor: "#f44336", // Border color when error
+      },
+      "&.Mui-error:after": {
+        borderBottomColor: "#f44336", // Border color when error
+      },
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
@@ -106,6 +111,12 @@ const CssTextField = withStyles({
       "&.Mui-focused fieldset": {
         borderColor: "#7b1fa2", // Border color when focused
       },
+      "&.Mui-error fieldset": {
+        borderColor: "#f44336", // Border color when error
+      },
+    },
+    "& .MuiFormHelperText-root.Mui-error": {
+      color: "#f44336", // Helper text color when error
     },
   },
 })(TextField);
@@ -113,11 +124,18 @@ const CssTextField = withStyles({
 const Signin = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const location = useLocation();
   const [error, setError] = React.useState(null);
   const [formData, setFormData] = React.useState({});
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
   const [fieldErrors, setFieldErrors] = React.useState({});
+
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      toast.success(location.state.successMessage);
+    }
+  }, [location.state]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -134,6 +152,43 @@ const Signin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      setFieldErrors({
+        email: !formData.email,
+        password: !formData.password,
+        // email: !formData.email ? "Email is required" : null,
+        // password: !formData.password ? "Password is required" : null,
+      });
+    }
+
+    // Client-side validation
+    let validationError = null;
+
+    switch (true) {
+      case !formData.email && !formData.password:
+        validationError = "All fields are required.";
+        break;
+
+      case !formData.email && !formData.password:
+        validationError = "Email and password are required.";
+        break;
+
+      case !formData.email:
+        validationError = "Email is required.";
+        break;
+      case !formData.password:
+        validationError = "Password is required.";
+        break;
+      default:
+        break;
+    }
+
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+
     try {
       setLoading(true);
       const res = await fetch("api/auth/signin", {
@@ -163,7 +218,7 @@ const Signin = () => {
       setLoading(false);
       setError(null);
       toast.success("Signin successful!");
-      navigate("/");
+      navigate("/", { state: { successMessage: "Login successful!" } });
     } catch (error) {
       setLoading(false);
       setError(error.message);
@@ -188,6 +243,7 @@ const Signin = () => {
             <Grid item xs={12}>
               <CssTextField
                 variant="filled"
+                size="small"
                 required
                 fullWidth
                 id="email"
@@ -202,6 +258,7 @@ const Signin = () => {
             <Grid item xs={12}>
               <CssTextField
                 variant="filled"
+                size="small"
                 required
                 fullWidth
                 id="password"

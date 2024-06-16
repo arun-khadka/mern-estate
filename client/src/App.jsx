@@ -8,6 +8,7 @@ import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
 import Header from "./components/Header";
 import Error from "./pages/Error";
+import MainLayout from "./pages/MainLayout";
 
 const theme = createTheme({
   palette: {
@@ -28,14 +29,15 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
-        <Header />
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="about" element={<About />} />
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="*" element={<Error />} />
+          </Route>
           <Route path="signin" element={<Signin />} />
           <Route path="signup" element={<Signup />} />
-          <Route path="profile" element={<Profile />} />
-          <Route path="*" element={<Error />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

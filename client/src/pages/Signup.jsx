@@ -81,6 +81,12 @@ const CssTextField = withStyles({
       "&:after": {
         borderBottomColor: "#7b1fa2", // Border color when focused
       },
+      "&.Mui-error:before": {
+        borderBottomColor: "#f44336", // Border color when error
+      },
+      "&.Mui-error:after": {
+        borderBottomColor: "#f44336", // Border color when error
+      },
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
@@ -92,6 +98,12 @@ const CssTextField = withStyles({
       "&.Mui-focused fieldset": {
         borderColor: "#7b1fa2", // Border color when focused
       },
+      "&.Mui-error fieldset": {
+        borderColor: "#f44336", // Border color when error
+      },
+    },
+    "& .MuiFormHelperText-root.Mui-error": {
+      color: "#f44336", // Helper text color when error
     },
   },
 })(TextField);
@@ -99,7 +111,7 @@ const CssTextField = withStyles({
 const Signup = () => {
   const classes = useStyles();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
+  const [error, setError] = React.useState(null);
   const [formData, setFormData] = React.useState({});
   const [loading, setLoading] = React.useState(false);
   const [showPassword, setShowPassword] = React.useState(false);
@@ -121,15 +133,52 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.email || !formData.password) {
-      // setFieldErrors({
-      //   email: !formData.email ? "Email is required" : null,
-      //   password: !formData.password ? "Password is required" : null,
-      // });
-      toast.error("Email and password are required.");
-
+    if (!formData.username || !formData.email || !formData.password) {
+      setFieldErrors({
+        username: !formData.username,
+        email: !formData.email,
+        password: !formData.password,
+        // username: !formData.username ? "Username required" : null,
+        // email: !formData.email ? "Email is required" : null,
+        // password: !formData.password ? "Password is required" : null,
+      });
       return;
     }
+
+    // Client-side validation
+    
+    // let validationError = null;
+
+    // switch (true) {
+    //   case !formData.username && !formData.email && !formData.password:
+    //     validationError = "All fields are required.";
+    //     break;
+    //   case !formData.username && !formData.password:
+    //     validationError = "Username and password are required.";
+    //     break;
+    //   case !formData.email && !formData.password:
+    //     validationError = "Email and password are required.";
+    //     break;
+    //   case !formData.username && !formData.email:
+    //     validationError = "Username and email are required.";
+    //     break;
+    //   case !formData.username:
+    //     validationError = "Username is required.";
+    //     break;
+    //   case !formData.email:
+    //     validationError = "Email is required.";
+    //     break;
+    //   case !formData.password:
+    //     validationError = "Password is required.";
+    //     break;
+    //   default:
+    //     break;
+    // }
+
+    // if (validationError) {
+    //   toast.error(validationError);
+    //   return;
+    // }
 
     try {
       setLoading(true);
@@ -160,7 +209,7 @@ const Signup = () => {
       setLoading(false);
       setError(null);
       toast.success("Signup successful!");
-      navigate("/signin");
+      navigate("/signin", { state: { successMessage: "Signup successful! Please log in." } });
     } catch (error) {
       setLoading(false);
       setError(error.message);
@@ -184,6 +233,7 @@ const Signup = () => {
             <Grid item xs={12}>
               <CssTextField
                 variant="filled"
+                size="small"
                 required
                 fullWidth
                 id="username"
@@ -193,11 +243,13 @@ const Signup = () => {
                 onChange={handleChange}
                 helperText={fieldErrors.username}
                 error={!!fieldErrors.username}
+                className={fieldErrors.username ? classes.error : ""}
               />
             </Grid>
             <Grid item xs={12}>
               <CssTextField
                 variant="filled"
+                size="small"
                 required
                 fullWidth
                 id="email"
@@ -207,11 +259,13 @@ const Signup = () => {
                 onChange={handleChange}
                 helperText={fieldErrors.email}
                 error={!!fieldErrors.email}
+                className={fieldErrors.email ? classes.error : ""}
               />
             </Grid>
             <Grid item xs={12}>
               <CssTextField
                 variant="filled"
+                size="small"
                 required
                 fullWidth
                 id="password"
@@ -236,6 +290,7 @@ const Signup = () => {
                 }}
                 helperText={fieldErrors.password}
                 error={!!fieldErrors.password}
+                className={fieldErrors.password ? classes.error : ""}
               />
             </Grid>
           </Grid>
@@ -263,6 +318,7 @@ const Signup = () => {
           </Grid>
         </form>
         <ToastContainer
+          // transition="bounce"
           position="top-right"
           autoClose={5000}
           hideProgressBar={false}

@@ -241,7 +241,7 @@ const Header = () => {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
-                  alt="image"
+                  alt=""
                   src="https://cdn.ontourmedia.io/gunsnroses/site_v2/animations/gnr_loop_logo_01.jpg"
                 />
               </IconButton>

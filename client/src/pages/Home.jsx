@@ -1,8 +1,19 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import TextField from "@mui/material/TextField";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 const Home = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.successMessage) {
+      toast.success(location.state.successMessage);
+    }
+  }, [location.state]);
+
   return (
     <Box
       component="form"
@@ -61,6 +72,18 @@ const Home = () => {
           variant="standard"
         />
       </div>
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </Box>
   );
 };
