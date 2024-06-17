@@ -132,16 +132,23 @@ const Signin = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(error);
+      if (error.code === "ECONNRESET") {
+        // Handle ECONNRESET error
+        toast.error("Connection to server lost. Please try again later.");
+      } else {
+        toast.error(error.message);
+      }
+      // dispatch(signInFailure(error.message));
     }
+  }, [error, dispatch]);
 
+  useEffect(() => {
     if (currentUser) {
-      navigate("/", { state: { successMessage: "Login successful!" } });
+      navigate("/");
     }
-  }, [error, currentUser, navigate]);
+  }, [currentUser, navigate]);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
-
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
@@ -178,7 +185,7 @@ const Signin = () => {
 
       if (!data.success) {
         if (data.errors) {
-          let errors = {};9
+          let errors = {};
           data.errors.forEach((error) => {
             errors[error.param] = error.msg;
             toast.error(error.msg);
@@ -190,7 +197,6 @@ const Signin = () => {
         dispatch(signInFailure(data.message));
         return;
       }
-
       dispatch(signInSuccess(data));
     } catch (error) {
       toast.error(error.message);

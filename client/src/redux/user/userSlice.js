@@ -2,8 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   currentUser: null,
-  error: null,
   loading: false,
+  error: null,
 };
 
 const userSlice = createSlice({
@@ -22,9 +22,15 @@ const userSlice = createSlice({
       state.error = action.payload;
       state.loading = false;
     },
+    signOut: (state) => {
+      state.currentUser = null;
+      state.error = null;
+      localStorage.removeItem("token"); // Clear the token from local storage
+    },
   },
 });
 
-export const { signInStart, signInSuccess, signInFailure } = userSlice.actions;
+export const { signInStart, signInSuccess, signInFailure, signOut } =
+  userSlice.actions;
 
 export default userSlice.reducer;

@@ -13,8 +13,10 @@ import Typography from "@mui/material/Typography";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreIcon from "@mui/icons-material/MoreVert";
 import { styled, alpha } from "@mui/material/styles";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { signOut } from "../redux/user/userSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -65,12 +67,15 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 const pages = ["Home", "About", "Signin"];
-const settings = ["Profile", "Account", "Logout"];
+const settings = ["Profile", "Account", "Signout"];
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -94,6 +99,11 @@ const Header = () => {
 
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
+  };
+
+  const handleSignOut = () => {
+    dispatch(signOut());
+    navigate("/signin"); // Redirect to sign-in page after sign-out
   };
 
   const [showBorder, setShowBorder] = useState(false);
@@ -262,11 +272,17 @@ const Header = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              {settings.map((setting) =>
+                setting === "Signout" ? (
+                  <MenuItem key={setting} onClick={handleSignOut}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                ) : (
+                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                    <Typography textAlign="center">{setting}</Typography>
+                  </MenuItem>
+                )
+              )}
             </Menu>
           </Box>
         </Toolbar>

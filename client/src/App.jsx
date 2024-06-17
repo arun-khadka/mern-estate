@@ -38,7 +38,6 @@ function App() {
             <Route path="signup" element={<Signup />} />
             <Route path="*" element={<Error />} />
           </Route>
-          
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
