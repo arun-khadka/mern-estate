@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Link,
-  useNavigate,
-  useLocation,
-} from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
@@ -182,7 +178,7 @@ const Signin = () => {
 
       if (!data.success) {
         if (data.errors) {
-          let errors = {};
+          let errors = {};9
           data.errors.forEach((error) => {
             errors[error.param] = error.msg;
             toast.error(error.msg);
@@ -301,4 +297,4 @@ const Signin = () => {
   );
 };
 
-export default Signin
+export default Signin;
