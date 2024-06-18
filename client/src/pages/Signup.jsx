@@ -19,6 +19,7 @@ import {
   Container,
   CircularProgress,
 } from "@material-ui/core";
+import OAuth from "../components/OAuth";
 const useStyles = makeStyles((theme) => ({
   "@global": {
     body: {
@@ -129,7 +130,7 @@ const Signup = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleRegularSignUp = async (e) => {
     e.preventDefault();
 
     if (!formData.username || !formData.email || !formData.password) {
@@ -137,14 +138,10 @@ const Signup = () => {
         username: !formData.username,
         email: !formData.email,
         password: !formData.password,
-        // username: !formData.username ? "Username required" : null,
-        // email: !formData.email ? "Email is required" : null,
-        // password: !formData.password ? "Password is required" : null,
       });
     }
 
     // Client-side validation
-
     let validationError = null;
 
     switch (true) {
@@ -216,8 +213,12 @@ const Signup = () => {
       toast.error(error.message);
     }
   };
-
   console.log(formData);
+
+  const handleGoogleSignIn = () => {
+    console.log("Sign in with Google clicked");
+    navigate("/");
+  };
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -228,7 +229,7 @@ const Signup = () => {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form onSubmit={handleSubmit} className={classes.form} noValidate>
+        <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <CssTextField
@@ -295,13 +296,16 @@ const Signup = () => {
             </Grid>
           </Grid>
           <Button
+            id="signUpButton"
             type="submit"
             fullWidth
+            disableRipple
             disabled={loading}
             variant="contained"
             color="primary"
             size="large"
             className={classes.submit}
+            onClick={handleRegularSignUp}
           >
             {loading ? (
               <CircularProgress aria-describedby="aria-busy" size={24} />
@@ -309,6 +313,7 @@ const Signup = () => {
               "Sign up"
             )}
           </Button>
+          <OAuth onGoogleSignIn={handleGoogleSignIn} />
           <Grid container justify="flex-end">
             <Grid item>
               <CustomLink component={Link} to="/signin" variant="body2">

@@ -13,6 +13,7 @@ import {
   Button,
   CssBaseline,
   TextField,
+  Link as MuiLink,
   Grid,
   Typography,
   Container,
@@ -24,6 +25,7 @@ import {
   signInSuccess,
   signInFailure,
 } from "../redux/user/userSlice";
+import OAuth from "../components/OAuth";
 
 const useStyles = makeStyles((theme) => ({
   "@global": {
@@ -65,7 +67,7 @@ const CustomLink = withStyles({
       textDecoration: "underline", // Optional: Add underline on hover
     },
   },
-})(Link);
+})(MuiLink);
 
 const CssTextField = withStyles({
   root: {
@@ -131,18 +133,6 @@ const Signin = () => {
   }, [location.state]);
 
   useEffect(() => {
-    if (error) {
-      if (error.code === "ECONNRESET") {
-        // Handle ECONNRESET error
-        toast.error("Connection to server lost. Please try again later.");
-      } else {
-        toast.error(error.message);
-      }
-      // dispatch(signInFailure(error.message));
-    }
-  }, [error, dispatch]);
-
-  useEffect(() => {
     if (currentUser) {
       navigate("/");
     }
@@ -160,7 +150,7 @@ const Signin = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleRegularSignIn = async (e) => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
@@ -204,6 +194,11 @@ const Signin = () => {
     }
   };
 
+  const handleGoogleSignIn = () => {
+    console.log("Sign in with Google clicked");
+    navigate("/");
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -214,7 +209,7 @@ const Signin = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form onSubmit={handleSubmit} className={classes.form} noValidate>
+        <form className={classes.form} noValidate>
           <Grid container spacing={2}>
             <Grid item xs={12}>
               <CssTextField
@@ -263,16 +258,20 @@ const Signin = () => {
             </Grid>
           </Grid>
           <Button
+            id="signInButton"
             type="submit"
             fullWidth
+            disableRipple
             disabled={loading}
             variant="contained"
             color="primary"
             size="large"
             className={classes.submit}
+            onClick={handleRegularSignIn}
           >
             {loading ? <CircularProgress size={24} /> : "Sign in"}
           </Button>
+          <OAuth onGoogleSignIn={handleGoogleSignIn} />
           <Grid container>
             <Grid item xs>
               <CustomLink to="/forgot-password" variant="body2">
@@ -280,7 +279,7 @@ const Signin = () => {
               </CustomLink>
             </Grid>
             <Grid item>
-              <CustomLink to="/signup" variant="body2">
+              <CustomLink component={Link} to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </CustomLink>
             </Grid>
