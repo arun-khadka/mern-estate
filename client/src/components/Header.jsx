@@ -242,7 +242,7 @@ const Header = () => {
                       />
                     ) : (
                       <Avatar>
-                        {currentUser.name.charAt(0).toUpperCase()}
+                        {currentUser.name?.charAt(0).toUpperCase()}
                       </Avatar>
                     )}
                   </IconButton>
