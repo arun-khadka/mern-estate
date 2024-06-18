@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
+import Grid from "@mui/material/Grid";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
@@ -15,7 +16,7 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { styled, alpha } from "@mui/material/styles";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { List, ListItem, ListItemButton, ListItemText } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { signOut } from "../redux/user/userSlice";
 
 const Search = styled("div")(({ theme }) => ({
@@ -66,18 +67,29 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
-const pages = ["Home", "About", "Signin"];
-const settings = ["Profile", "Account", "Signout"];
+
+const CustomButton = styled(Button)(({ theme }) => ({
+  color: "#fff",
+  borderColor: "#fff",
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.common.white, 0.1),
+    borderColor: alpha(theme.palette.common.white, 0.3),
+  },
+}));
+
+const pages = ["Home", "About"];
+const settings = ["Profile", "Signout"];
 
 const Header = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [showBorder, setShowBorder] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
+  const currentUser = useSelector((state) => state.user.currentUser);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
   const handleOpenUserMenu = (event) => {
@@ -88,62 +100,27 @@ const Header = () => {
     setAnchorElUser(null);
   };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
-
   const handleMobileMenuOpen = (event) => {
     setMobileMoreAnchorEl(event.currentTarget);
   };
 
+  const handleMobileMenuClose = () => {
+    setMobileMoreAnchorEl(null);
+  };
+
   const handleSignOut = () => {
     dispatch(signOut());
+    handleCloseUserMenu();
     navigate("/signin"); // Redirect to sign-in page after sign-out
   };
 
-  const [showBorder, setShowBorder] = useState(false);
-
-  // useEffect(() => {
-  //   const handleScroll = () => {
-  //     const currentScrollPos = window.scrollY;
-  //     if (currentScrollPos > 0) {
-  //       setShowBorder(true);
-  //     } else {
-  //       setShowBorder(false);
-  //     }
-  //   };
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, []);
-
-  const menuId = "primary-search-account-menu";
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
-
   const mobileMenuId = "primary-search-account-menu-mobile";
+
+  const handleProfileClick = () => {
+    navigate("/profile");
+    handleMobileMenuClose();
+  };
+
   const renderMobileMenu = (
     <Menu
       anchorEl={mobileMoreAnchorEl}
@@ -248,47 +225,73 @@ const Header = () => {
             </IconButton>
           </Box>
           <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar
-                  alt=""
-                  src="https://cdn.ontourmedia.io/gunsnroses/site_v2/animations/gnr_loop_logo_01.jpg"
-                />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) =>
-                setting === "Signout" ? (
-                  <MenuItem key={setting} onClick={handleSignOut}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                ) : (
-                  <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                    <Typography textAlign="center">{setting}</Typography>
-                  </MenuItem>
-                )
-              )}
-            </Menu>
+            {currentUser ? (
+              <>
+                <Tooltip title="Profile">
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    {currentUser.photo ? (
+                      <Avatar
+                        alt={currentUser.name}
+                        src={currentUser.photo}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            currentUser.name
+                          )}&background=random&color=fff`;
+                        }}
+                      />
+                    ) : (
+                      <Avatar>
+                        {currentUser.name.charAt(0).toUpperCase()}
+                      </Avatar>
+                    )}
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  sx={{ mt: "45px" }}
+                  id="menu-appbar"
+                  anchorEl={anchorElUser}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElUser)}
+                  onClose={handleCloseUserMenu}
+                >
+                  {settings.map((setting) =>
+                    setting === "Signout" ? (
+                      <MenuItem key={setting} onClick={handleSignOut}>
+                        <Typography textAlign="center">{setting}</Typography>
+                      </MenuItem>
+                    ) : (
+                      <MenuItem key={setting} onClick={handleProfileClick}>
+                        <Typography textAlign="center">{setting}</Typography>
+                      </MenuItem>
+                    )
+                  )}
+                </Menu>
+              </>
+            ) : (
+              <CustomButton
+                component={RouterLink}
+                to="/signin"
+                variant="outlined"
+                color="primary"
+                sx={{ color: "#fff" }}
+                size="medium"
+              >
+                Sign In
+              </CustomButton>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
-      {renderMenu}
     </Box>
   );
 };

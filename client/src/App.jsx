@@ -6,9 +6,9 @@ import About from "./pages/About";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
-import Header from "./components/Header";
 import Error from "./pages/Error";
 import MainLayout from "./pages/MainLayout";
+import PrivateRoute from "./components/PrivateRoute";
 
 const theme = createTheme({
   palette: {
@@ -33,7 +33,9 @@ function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Home />} />
             <Route path="about" element={<About />} />
-            <Route path="profile" element={<Profile />} />
+            <Route element={<PrivateRoute />}>
+              <Route path="profile" element={<Profile />} />
+            </Route>
             <Route path="signin" element={<Signin />} />
             <Route path="signup" element={<Signup />} />
             <Route path="*" element={<Error />} />
@@ -42,6 +44,7 @@ function App() {
       </BrowserRouter>
     </ThemeProvider>
   );
+  a;
 }
 
 export default App;

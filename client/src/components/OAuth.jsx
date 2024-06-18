@@ -5,7 +5,7 @@ import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../firebase";
 import { FcGoogle } from "react-icons/fc";
 import { useDispatch } from "react-redux";
-import { signInSuccess } from "../redux/user/userSlice";
+import { signInSuccess, setUser } from "../redux/user/userSlice";
 
 const useStyles = makeStyles((theme) => ({
   "@global": {
@@ -56,6 +56,14 @@ const OAuth = ({ onGoogleSignIn }) => {
       });
       const data = await res.json();
       dispatch(signInSuccess(data));
+      dispatch(
+        setUser({
+          id: result.user.uid,
+          name: result.user.displayName,
+          email: result.user.email,
+          photo: result.user.photoURL,
+        })
+      );
       onGoogleSignIn(result); // Pass the result back to the parent component
     } catch (error) {
       console.log("Couldn't sign in with Google", error);
