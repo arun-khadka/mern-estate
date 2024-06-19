@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import Menu from "@mui/material/Menu";
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Avatar from "@mui/material/Avatar";
@@ -21,9 +20,9 @@ import { signOut } from "../redux/user/userSlice";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
-  borderRadius: 14,
+  borderRadius: 8,
   border: `1px ${theme.palette.common.white}`,
-  boxShadow: `0 1px 3px ${alpha(theme.palette.common.black, 0.2)}`, // Box shadow for shadowed effect
+  // boxShadow: `0 1px 3px ${alpha(theme.palette.common.black, 0.2)}`,
   backgroundColor: alpha(theme.palette.common.white, 0.0),
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.1),
@@ -63,17 +62,31 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     transition: theme.transitions.create("width"),
     width: "100%",
     [theme.breakpoints.up("md")]: {
-      width: "12ch",
+      width: "15ch",
     },
   },
 }));
 
 const CustomButton = styled(Button)(({ theme }) => ({
-  color: "#fff",
-  borderColor: "#fff",
+  color: "#FFFFFF",
+  borderColor: "#FFFFF",
+  fontSize: 16,
+  fontWeight: 500,
   "&:hover": {
     backgroundColor: alpha(theme.palette.common.white, 0.1),
     borderColor: alpha(theme.palette.common.white, 0.3),
+    color: "white",
+  },
+  "&.Mui-focusVisible": {
+    color: "teal",
+  },
+}));
+
+const CustomMenuItem = styled(MenuItem)(({ theme }) => ({
+  "&:hover": {
+    borderRadius: 2,
+    backgroundColor: "#a835d8",
+    color: "#FFFFFF",
   },
 }));
 
@@ -81,9 +94,7 @@ const pages = ["Home", "About"];
 const settings = ["Profile", "Signout"];
 
 const Header = () => {
-  const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [showBorder, setShowBorder] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
   const currentUser = useSelector((state) => state.user.currentUser);
@@ -144,6 +155,18 @@ const Header = () => {
             disablePadding
             component={RouterLink}
             to={page === "Home" ? "/" : `/${page.toLowerCase()}`}
+            sx={{
+              textAlign: "center",
+              "& .MuiTypography-root": {
+                color: "#FFFFFF",
+              },
+              "&:hover .MuiTypography-root": {
+                color: "teal",
+              },
+              "&.Mui-selected .MuiTypography-root": {
+                color: "#FFFFFF",
+              },
+            }}
           >
             <ListItemButton sx={{ textAlign: "center" }}>
               <ListItemText primary={page} />
@@ -157,14 +180,14 @@ const Header = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="fixed" sx={{ backgroundColor: "#7b1fa2" }}>
-        <Toolbar>
+        <Toolbar sx={{ padding: { xs: 1, sm: 1 } }}>
           <Typography
             variant="h6"
             noWrap
             component="div"
             sx={{ display: { xs: "none", sm: "block", fontWeight: "700" } }}
           >
-            MyEstate
+            Estate
           </Typography>
 
           <Box sx={{ flexGrow: 1 }} />
@@ -181,33 +204,25 @@ const Header = () => {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: "none", md: "flex" } }}>
             <Box sx={{ display: { xs: "none", sm: "block" } }}>
-              <div
-                className={`${
-                  showBorder
-                    ? "absolute bottom-0 left-0 right-0 h-2 bg-slate-950 rounded-md"
-                    : ""
-                } ${
-                  showBorder
-                    ? "after:content-[''] after:absolute after:h-[7px] after:bg-purple-500 after:rounded-md after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-500 after:origin-center"
-                    : ""
-                }`}
-              ></div>
               {pages.map((page) => (
-                <Button
-                  disableTouchRipple
-                  className={`relative text-lg w-fit block after:rounded-md aria-[current=page]:text-purple-500 after:block after:content-[''] after:absolute after:h-[4px] hover:text-teal-500 after:bg-purple-500 after:w-full after:scale-x-0 after:hover:scale-x-100 after:transition after:duration-500 after:origin-left after:bottom-[1px] active:text-purple-500}`}
+                <CustomButton
+                  disableRipple
                   key={page}
-                  sx={{
-                    color: "#FFFFFF",
-                    fontSize: 16,
-                    fontWeight: 500,
-                    mx: 1.1,
-                  }}
                   component={RouterLink}
                   to={page === "Home" ? "/" : `/${page.toLowerCase()}`}
+                  sx={{
+                    fontSize: 14,
+                    mx: 1.1,
+                    "&.active": {
+                      color: "#FFFFFF", // Ensuring the color stays white when active
+                    },
+                    "&:visited": {
+                      color: "#FFFFFF", // Ensuring the color stays white when visited
+                    },
+                  }}
                 >
                   {page}
-                </Button>
+                </CustomButton>
               ))}
             </Box>
           </Box>
@@ -265,25 +280,38 @@ const Header = () => {
                 >
                   {settings.map((setting) =>
                     setting === "Signout" ? (
-                      <MenuItem key={setting} onClick={handleSignOut}>
+                      <CustomMenuItem key={setting} onClick={handleSignOut}>
                         <Typography textAlign="center">{setting}</Typography>
-                      </MenuItem>
+                      </CustomMenuItem>
                     ) : (
-                      <MenuItem key={setting} onClick={handleProfileClick}>
+                      <CustomMenuItem
+                        key={setting}
+                        onClick={handleProfileClick}
+                      >
                         <Typography textAlign="center">{setting}</Typography>
-                      </MenuItem>
+                      </CustomMenuItem>
                     )
                   )}
                 </Menu>
               </>
             ) : (
               <CustomButton
+                disableRipple
                 component={RouterLink}
                 to="/signin"
                 variant="outlined"
-                color="primary"
-                sx={{ color: "#fff" }}
-                size="medium"
+                sx={{
+                  fontSize: 14,
+                  marginRight: 1,
+                  textTransform: "Capital",
+
+                  "&.active": {
+                    color: "#FFFFFF", // Ensuring the color stays white when active
+                  },
+                  "&:visited": {
+                    color: "#FFFFFF", // Ensuring the color stays white when visited
+                  },
+                }}
               >
                 Sign In
               </CustomButton>

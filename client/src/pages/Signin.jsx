@@ -57,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: "#7b1fa2",
     },
   },
+  oAuth: {
+    margin: theme.spacing(1, 0),
+  },
 }));
 
 const CustomLink = withStyles({
@@ -120,7 +123,7 @@ const Signin = () => {
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const { loading, error, currentUser } = useSelector((state) => state.user);
+  const { loading, currentUser } = useSelector((state) => state.user);
 
   const [formData, setFormData] = useState({});
   const [showPassword, setShowPassword] = useState(false);
@@ -271,14 +274,19 @@ const Signin = () => {
           >
             {loading ? <CircularProgress size={24} /> : "Sign in"}
           </Button>
-          <OAuth onGoogleSignIn={handleGoogleSignIn} />
+          <div className={classes.oAuth}>
+            <OAuth onGoogleSignIn={handleGoogleSignIn} />
+          </div>
           <Grid container>
             <Grid item xs>
-              <CustomLink to="/forgot-password" variant="body2">
+              <CustomLink
+                to="/forgot-password"
+                variant="body2"
+              >
                 Forgot password?
               </CustomLink>
             </Grid>
-            <Grid item>
+            <Grid item >
               <CustomLink component={Link} to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </CustomLink>
