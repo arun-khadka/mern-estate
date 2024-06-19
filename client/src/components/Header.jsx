@@ -83,10 +83,23 @@ const CustomButton = styled(Button)(({ theme }) => ({
 }));
 
 const CustomMenuItem = styled(MenuItem)(({ theme }) => ({
+  minHeight: 40,
+  padding: theme.spacing(1, 2),
   "&:hover": {
     borderRadius: 2,
     backgroundColor: "#a835d8",
     color: "#FFFFFF",
+  },
+  [theme.breakpoints.down("sm")]: {
+    "& .MuiTypography-root": {
+      color: "#FFFFFF",
+    },
+    "&:hover .MuiTypography-root": {
+      color: "teal",
+    },
+    "&.Mui-selected .MuiTypography-root": {
+      color: "#FFFFFF",
+    },
   },
 }));
 
@@ -94,6 +107,7 @@ const pages = ["Home", "About"];
 const settings = ["Profile", "Signout"];
 
 const Header = () => {
+  const [anchorEl, setAnchorEL] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -130,6 +144,7 @@ const Header = () => {
   const handleProfileClick = () => {
     navigate("/profile");
     handleMobileMenuClose();
+    handleCloseUserMenu();
   };
 
   const renderMobileMenu = (
@@ -263,7 +278,12 @@ const Header = () => {
                   </IconButton>
                 </Tooltip>
                 <Menu
-                  sx={{ mt: "45px" }}
+                  sx={{
+                    mt: "45px",
+                    "& .MuiPaper-root": {
+                      maxHeight: 200,
+                    },
+                  }}
                   id="menu-appbar"
                   anchorEl={anchorElUser}
                   anchorOrigin={{

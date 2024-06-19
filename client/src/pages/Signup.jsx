@@ -44,6 +44,15 @@ const useStyles = makeStyles((theme) => ({
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(3),
   },
+  formContainer: {
+    width: "100%",
+    maxWidth: 400,
+    margin: "auto", // Center the form horizontally
+    padding: theme.spacing(3),
+    backgroundColor: "#f9f9f9",
+    borderRadius: theme.shape.borderRadius,
+    // boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
+  },
   submit: {
     margin: theme.spacing(3, 0, 1),
     backgroundColor: "#8e24aa",
@@ -229,99 +238,102 @@ const Signup = () => {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <CssTextField
-                variant="filled"
-                size="small"
-                required
-                fullWidth
-                id="username"
-                label="User Name"
-                name="username"
-                autoComplete="username"
-                onChange={handleChange}
-                helperText={fieldErrors.username}
-                error={!!fieldErrors.username}
-                className={fieldErrors.username ? classes.error : ""}
-              />
+        <div className={classes.formContainer}>
+          <form className={classes.form} noValidate>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <CssTextField
+                  variant="outlined"
+                  size="small"
+                  required
+                  fullWidth
+                  id="username"
+                  label="User Name"
+                  name="username"
+                  autoComplete="username"
+                  onChange={handleChange}
+                  helperText={fieldErrors.username}
+                  error={!!fieldErrors.username}
+                  className={fieldErrors.username ? classes.error : ""}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CssTextField
+                  variant="outlined"
+                  size="small"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  onChange={handleChange}
+                  helperText={fieldErrors.email}
+                  error={!!fieldErrors.email}
+                  className={fieldErrors.email ? classes.error : ""}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CssTextField
+                  variant="outlined"
+                  size="small"
+                  required
+                  fullWidth
+                  id="password"
+                  label="Password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  onChange={handleChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  helperText={fieldErrors.password}
+                  error={!!fieldErrors.password}
+                  className={fieldErrors.password ? classes.error : ""}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <CssTextField
-                variant="filled"
-                size="small"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                onChange={handleChange}
-                helperText={fieldErrors.email}
-                error={!!fieldErrors.email}
-                className={fieldErrors.email ? classes.error : ""}
-              />
+            <Button
+              id="signUpButton"
+              type="submit"
+              fullWidth
+              disableRipple
+              disabled={loading}
+              variant="contained"
+              color="primary"
+              size="large"
+              className={classes.submit}
+              onClick={handleRegularSignUp}
+            >
+              {loading ? (
+                <CircularProgress aria-describedby="aria-busy" size={24} />
+              ) : (
+                "Sign up"
+              )}
+            </Button>
+            <OAuth onGoogleSignIn={handleGoogleSignIn} />
+            <Grid container justify="flex-end">
+              <Grid item>
+                <CustomLink component={Link} to="/signin" variant="body2">
+                  Already have an account? Sign in
+                </CustomLink>
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <CssTextField
-                variant="filled"
-                size="small"
-                required
-                fullWidth
-                id="password"
-                label="Password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                onChange={handleChange}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                helperText={fieldErrors.password}
-                error={!!fieldErrors.password}
-                className={fieldErrors.password ? classes.error : ""}
-              />
-            </Grid>
-          </Grid>
-          <Button
-            id="signUpButton"
-            type="submit"
-            fullWidth
-            disableRipple
-            disabled={loading}
-            variant="contained"
-            color="primary"
-            size="large"
-            className={classes.submit}
-            onClick={handleRegularSignUp}
-          >
-            {loading ? (
-              <CircularProgress aria-describedby="aria-busy" size={24} />
-            ) : (
-              "Sign up"
-            )}
-          </Button>
-          <OAuth onGoogleSignIn={handleGoogleSignIn} />
-          <Grid container justify="flex-end">
-            <Grid item>
-              <CustomLink component={Link} to="/signin" variant="body2">
-                Already have an account? Sign in
-              </CustomLink>
-            </Grid>
-          </Grid>
-        </form>
+          </form>
+        </div>
+
         <ToastContainer
           // transition="bounce"
           position="top-right"

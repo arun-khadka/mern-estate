@@ -14,7 +14,10 @@ import {
 } from "@material-ui/core";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import EditIcon from "@mui/icons-material/Edit";
-import { useSelector } from "react-redux";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { signOut } from "../redux/user/userSlice";
+import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,24 +33,37 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     marginBottom: theme.spacing(2),
   },
+  formContainer: {
+    width: "100%",
+    maxWidth: 400,
+    margin: "auto", // Center the form horizontally
+    padding: theme.spacing(3),
+    backgroundColor: "#f9f9f9",
+    borderRadius: theme.shape.borderRadius,
+    // boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
+  },
   form: {
     width: "100%",
     marginBottom: theme.spacing(2),
   },
   card: {
+    position: "relative",
     display: "flex",
     width: "100%",
+    height: "95%", 
+    justifyContent: "space-between", 
     borderRadius: theme.shape.borderRadius,
     boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
     marginBottom: theme.spacing(1),
-    position: "relative",
     transition: "box-shadow 0.3s",
     "&:hover": {
       boxShadow: `0 6px 12px ${theme.palette.primary.main}`,
-    },
+    }
   },
   cardMedia: {
-    width: 160,
+    width: "35%", 
+    height: 260,
+    objectFit: "cover",
   },
   cardDetails: {
     display: "flex",
@@ -76,6 +92,18 @@ const useStyles = makeStyles((theme) => ({
     top: theme.spacing(1),
     right: theme.spacing(1),
     color: "#7b1fa2",
+  },
+  signOutButton: {
+    display: "flex",
+    justifyContent: "center",
+    marginBottom: theme.spacing(1),
+  },
+  deleteButton: {
+    color: theme.palette.error.main,
+  },
+  delButton: {
+    display: "flex",
+    justifyContent: "end",
   },
   submit: {
     margin: theme.spacing(3, 0, 1),
@@ -134,6 +162,8 @@ const CssTextField = withStyles({
 const Profile = () => {
   const classes = useStyles();
   const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const cards = [
     {
@@ -170,8 +200,16 @@ const Profile = () => {
     console.log("Creating a new listing...");
   };
 
+  const handleDeleteAccount = () => {
+    console.log("Deleting user account...");
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+  };
+  const handleSignOut = () => {
+    dispatch(signOut());
+    navigate("/signin");
   };
 
   return (
@@ -193,53 +231,76 @@ const Profile = () => {
           <Avatar>{currentUser.name?.charAt(0).toUpperCase()}</Avatar>
         )}
       </div>
-
-      <form className={classes.form} onSubmit={handleSubmit}>
-        <CssTextField
-          id="username"
-          variant="outlined"
-          margin="dense"
-          size="small"
-          fullWidth
-          label="Username"
-          name="username"
-          autoComplete="username"
-          // Add value and onChange handlers here
-        />
-        <CssTextField
-          id="email"
-          variant="outlined"
-          margin="dense"
-          size="small"
-          fullWidth
-          label="Email Address"
-          name="email"
-          autoComplete="email"
-          // Add value and onChange handlers here
-        />
-        <CssTextField
-          id="password"
-          variant="outlined"
-          margin="dense"
-          size="small"
-          fullWidth
-          label="Password"
-          name="password"
-          type="password"
-          // Add value and onChange handlers here
-        />
+      <div className={classes.signOutButton}>
         <Button
-          fullWidth
           disableRipple
-          size="large"
+          size="small"
           type="submit"
-          variant="contained"
+          variant="text"
           color="primary"
-          className={classes.submit}
+          onClick={handleSignOut}
         >
-          Update Profile
+          Sign out
         </Button>
-      </form>
+      </div>
+      <div className={classes.formContainer}>
+        <form className={classes.form} onSubmit={handleSubmit} noValidate>
+          <Grid container spacing={1}>
+            <Grid item xs={12}>
+              <CssTextField
+                id="username"
+                variant="outlined"
+                margin="dense"
+                size="small"
+                fullWidth
+                label="Username"
+                name="username"
+                autoComplete="username"
+                // Add value and onChange handlers here
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CssTextField
+                id="email"
+                variant="outlined"
+                margin="dense"
+                size="small"
+                fullWidth
+                label="Email Address"
+                name="email"
+                autoComplete="email"
+                // Add value and onChange handlers here
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <CssTextField
+                id="password"
+                variant="outlined"
+                margin="dense"
+                size="small"
+                fullWidth
+                label="Password"
+                name="password"
+                type="password"
+                // Add value and onChange handlers here
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Button
+                fullWidth
+                disableRipple
+                size="large"
+                type="submit"
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                Update Profile
+              </Button>
+            </Grid>
+          </Grid>
+        </form>
+      </div>
 
       <div className={classes.buttonContainer}>
         <Button
@@ -287,6 +348,27 @@ const Profile = () => {
           </Grid>
         ))}
       </Grid>
+      <div className={classes.delButton}>
+        <Button
+          disableRipple
+          size="small"
+          type="submit"
+          variant="text"
+          color="primary"
+          className={classes.deleteButton}
+        >
+          Delete Account
+          <IconButton
+            disableFocusRipple
+            disableTouchRipple
+            aria-label="delete-account"
+            className={classes.deleteButton}
+            onClick={handleDeleteAccount}
+          >
+            <DeleteIcon />
+          </IconButton>
+        </Button>
+      </div>
     </Container>
   );
 };

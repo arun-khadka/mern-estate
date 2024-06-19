@@ -19,12 +19,12 @@ import {
   Container,
   CircularProgress,
 } from "@material-ui/core";
-import { useDispatch, useSelector } from "react-redux";
 import {
   signInStart,
   signInSuccess,
   signInFailure,
 } from "../redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
 import OAuth from "../components/OAuth";
 
 const useStyles = makeStyles((theme) => ({
@@ -50,15 +50,21 @@ const useStyles = makeStyles((theme) => ({
     width: "100%", // Fix IE 11 issue.
     marginTop: theme.spacing(3),
   },
+  formContainer: {
+    width: "100%",
+    maxWidth: 400,
+    margin: "auto", // Center the form horizontally
+    padding: theme.spacing(3),
+    backgroundColor: "#f9f9f9",
+    borderRadius: theme.shape.borderRadius,
+    // boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
+  },
   submit: {
     margin: theme.spacing(3, 0, 1),
     backgroundColor: "#8e24aa",
     "&:hover": {
       backgroundColor: "#7b1fa2",
     },
-  },
-  oAuth: {
-    margin: theme.spacing(1, 0),
   },
 }));
 
@@ -212,87 +218,90 @@ const Signin = () => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <CssTextField
-                variant="filled"
-                size="small"
-                required
-                fullWidth
-                id="email"
-                label="Email Address"
-                name="email"
-                autoComplete="email"
-                onChange={handleChange}
-                helperText={fieldErrors.email}
-                error={!!fieldErrors.email}
-              />
+        <div className={classes.formContainer}>
+          <form className={classes.form} noValidate>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <CssTextField
+                  variant="outlined"
+                  size="small"
+                  required
+                  fullWidth
+                  id="email"
+                  label="Email Address"
+                  name="email"
+                  autoComplete="email"
+                  onChange={handleChange}
+                  helperText={fieldErrors.email}
+                  error={!!fieldErrors.email}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <CssTextField
+                  variant="outlined"
+                  size="small"
+                  required
+                  fullWidth
+                  id="password"
+                  label="Password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  onChange={handleChange}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                          edge="end"
+                        >
+                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                  helperText={fieldErrors.password}
+                  error={!!fieldErrors.password}
+                />
+              </Grid>
             </Grid>
-            <Grid item xs={12}>
-              <CssTextField
-                variant="filled"
-                size="small"
-                required
-                fullWidth
-                id="password"
-                label="Password"
-                name="password"
-                type={showPassword ? "text" : "password"}
-                autoComplete="current-password"
-                onChange={handleChange}
-                InputProps={{
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        onMouseDown={handleMouseDownPassword}
-                        edge="end"
-                      >
-                        {showPassword ? <VisibilityOff /> : <Visibility />}
-                      </IconButton>
-                    </InputAdornment>
-                  ),
-                }}
-                helperText={fieldErrors.password}
-                error={!!fieldErrors.password}
-              />
+            <Grid justifyContent="space-between">
+              <Grid item>
+                <Button
+                  id="signInButton"
+                  type="submit"
+                  fullWidth
+                  disableRipple
+                  disabled={loading}
+                  variant="contained"
+                  color="primary"
+                  size="large"
+                  className={classes.submit}
+                  onClick={handleRegularSignIn}
+                >
+                  {loading ? <CircularProgress size={24} /> : "Sign in"}
+                </Button>
+              </Grid>
+              <Grid item>
+                  <OAuth onGoogleSignIn={handleGoogleSignIn} />
+              </Grid>
             </Grid>
-          </Grid>
-          <Button
-            id="signInButton"
-            type="submit"
-            fullWidth
-            disableRipple
-            disabled={loading}
-            variant="contained"
-            color="primary"
-            size="large"
-            className={classes.submit}
-            onClick={handleRegularSignIn}
-          >
-            {loading ? <CircularProgress size={24} /> : "Sign in"}
-          </Button>
-          <div className={classes.oAuth}>
-            <OAuth onGoogleSignIn={handleGoogleSignIn} />
-          </div>
-          <Grid container>
+
             <Grid item xs>
-              <CustomLink
-                to="/forgot-password"
-                variant="body2"
-              >
+              <CustomLink to="/forgot-password" variant="body2">
                 Forgot password?
               </CustomLink>
             </Grid>
-            <Grid item >
+            <Grid item xs>
               <CustomLink component={Link} to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
               </CustomLink>
             </Grid>
-          </Grid>
-        </form>
+          </form>
+        </div>
+
         <ToastContainer
           position="top-right"
           autoClose={5000}
