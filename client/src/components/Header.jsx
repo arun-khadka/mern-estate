@@ -200,7 +200,14 @@ const Header = () => {
             variant="h6"
             noWrap
             component="div"
-            sx={{ display: { xs: "none", sm: "block", fontWeight: "700" } }}
+            sx={{
+              display: {
+                xs: "none",
+                sm: "block",
+                fontWeight: "700",
+                marginLeft: 14,
+              },
+            }}
           >
             Estate
           </Typography>
@@ -324,12 +331,12 @@ const Header = () => {
                   fontSize: 14,
                   marginRight: 1,
                   textTransform: "Capital",
-
                   "&.active": {
                     color: "#FFFFFF", // Ensuring the color stays white when active
                   },
                   "&:visited": {
                     color: "#FFFFFF", // Ensuring the color stays white when visited
+                    border: "#FFF",
                   },
                 }}
               >

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import {
   Container,
@@ -18,6 +18,18 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { signOut } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { app } from "../firebase";
+
+// allow read;
+// allow write: if
+// request.resource.size < 2 * 1024 * 1024 &&
+// request.resource.contentType.matches("images/.*")
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,6 +44,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     justifyContent: "center",
     marginBottom: theme.spacing(2),
+    cursor: "pointer",
   },
   formContainer: {
     width: "100%",
@@ -50,18 +63,18 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     display: "flex",
     width: "100%",
-    height: "95%", 
-    justifyContent: "space-between", 
+    height: "95%",
+    justifyContent: "space-between",
     borderRadius: theme.shape.borderRadius,
     boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
     marginBottom: theme.spacing(1),
     transition: "box-shadow 0.3s",
     "&:hover": {
       boxShadow: `0 6px 12px ${theme.palette.primary.main}`,
-    }
+    },
   },
   cardMedia: {
-    width: "35%", 
+    width: "35%",
     height: 260,
     objectFit: "cover",
   },
@@ -161,9 +174,22 @@ const CssTextField = withStyles({
 
 const Profile = () => {
   const classes = useStyles();
+  const fileRef = useRef(null);
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
+  const [avatar, setAvatar] = useState(currentUser.photo || "");
+  const [file, setFile] = useState(null);
+  const [filePerc, setFilePerc] = useState(0);
+  const [fileUploadError, setFileUploadError] = useState(false);
+  const [formData, setFormData] = useState({
+    username: currentUser.name || "",
+    email: currentUser.email || "",
+  });
+  console.log(formData);
+  console.log(filePerc);
+  console.log(fileUploadError);
 
   const cards = [
     {
@@ -212,37 +238,88 @@ const Profile = () => {
     navigate("/signin");
   };
 
+  const handleAvatarClick = () => {
+    fileRef.current.click();
+  };
+
+  const handleAvatarClose = () => {
+    setAvatarDialogOpen(false);
+  };
+
+  useEffect(() => {
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [file]);
+
+  const handleFileUpload = () => {
+    const storage = getStorage(app);
+    const fileName = new Date().getTime() + file.name;
+    const storagerRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storagerRef, file);
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress =
+          (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setFilePerc(Math.round(progress));
+      },
+      (error) => {
+        setFileUploadError(true);
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          setAvatar(downloadURL);
+          setFormData({ ...formData, avatar: downloadURL });
+          setFileUploadError(false);
+        });
+      }
+    );
+  };
+
+  const handleAvatarUpload = (event) => {
+    const selectedFile = event.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  const handleAvatarChange = (e) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   return (
     <Container maxWidth="md" className={classes.root}>
-      <div className={classes.avatarContainer}>
-        {currentUser.photo ? (
-          <Avatar
-            alt={currentUser.name}
-            src={currentUser.photo}
-            className={classes.avatar}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                currentUser.name
-              )}&background=random&color=fff`;
-            }}
-          />
-        ) : (
-          <Avatar>{currentUser.name?.charAt(0).toUpperCase()}</Avatar>
-        )}
+      <div className={classes.avatarContainer} onClick={handleAvatarClick}>
+        <Avatar
+          alt={currentUser.name}
+          src={
+            avatar ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(
+              currentUser.name
+            )}&background=random&color=fff`
+          }
+          className={classes.avatar}
+        />
       </div>
-      <div className={classes.signOutButton}>
-        <Button
-          disableRipple
-          size="small"
-          type="submit"
-          variant="text"
-          color="primary"
-          onClick={handleSignOut}
-        >
-          Sign out
-        </Button>
-      </div>
+      <input
+        onChange={handleAvatarChange}
+        type="file"
+        ref={fileRef}
+        accept="image/*"
+        hidden
+      />
+
       <div className={classes.formContainer}>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
           <Grid container spacing={1}>
@@ -300,6 +377,18 @@ const Profile = () => {
             </Grid>
           </Grid>
         </form>
+        <div className={classes.signOutButton}>
+          <Button
+            disableRipple
+            size="small"
+            type="submit"
+            variant="contained"
+            color="secondary"
+            onClick={handleSignOut}
+          >
+            Sign out
+          </Button>
+        </div>
       </div>
 
       <div className={classes.buttonContainer}>
@@ -316,7 +405,7 @@ const Profile = () => {
 
       <Grid container spacing={2}>
         {cards.map((card) => (
-          <Grid item xs={12} key={card}>
+          <Grid item xs={12} key={card.id}>
             <Card className={classes.card}>
               <CardMedia
                 className={classes.cardMedia}

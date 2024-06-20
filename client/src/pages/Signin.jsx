@@ -55,9 +55,9 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 400,
     margin: "auto", // Center the form horizontally
     padding: theme.spacing(3),
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#f1f0f1",
     borderRadius: theme.shape.borderRadius,
-    // boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
+    // boxShadow: `0 2px 4px ${theme.palette.success.main}`,
   },
   submit: {
     margin: theme.spacing(3, 0, 1),

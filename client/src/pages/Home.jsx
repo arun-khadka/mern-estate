@@ -4,18 +4,21 @@ import "react-toastify/dist/ReactToastify.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import CountUp from "react-countup";
 import { motion } from "framer-motion";
-// import SearchBar from "../SearchBar/SearchBar";
-import {
-  Box,
-  Typography,
-  Container,
-  Grid,
-  Paper,
-} from "@mui/material";
+import { Box, Typography, Container, Grid, Paper } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+
+// import SearchBar from "../SearchBar/SearchBar";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    marginTop: theme.spacing(12),
+  },
+}));
 
 const Home = () => {
   const location = useLocation();
+  const classes = useStyles();
 
   useEffect(() => {
     if (location.state?.successMessage) {
@@ -53,7 +56,7 @@ const Home = () => {
 
   return (
     <HeroWrapper>
-      <Container maxWidth="lg">
+      <Container maxWidth="xs" className={classes.root}>
         <Grid container spacing={4} alignItems="center">
           {/* left side */}
           <Grid item xs={12} md={6}>
@@ -81,9 +84,7 @@ const Home = () => {
                   Leave Behind the Challenges of Finding Your Perfect Home
                 </Typography>
               </Box>
-              <Box mt={4}>
-                {/* <SearchBar /> */}
-              </Box>
+              <Box mt={4}>{/* <SearchBar /> */}</Box>
               <Box display="flex" mt={4}>
                 <Grid container spacing={2}>
                   <Grid item xs={4}>
