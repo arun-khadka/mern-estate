@@ -17,7 +17,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { signOut } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import {
   getStorage,
   ref,
@@ -175,18 +174,13 @@ const CssTextField = withStyles({
 const Profile = () => {
   const classes = useStyles();
   const fileRef = useRef(null);
-  const { currentUser } = useSelector((state) => state.user);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
-  const [avatar, setAvatar] = useState(currentUser.photo || "");
+  const [avatar, setAvatar] = useState();
   const [file, setFile] = useState(null);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
-  const [formData, setFormData] = useState({
-    username: currentUser.name || "",
-    email: currentUser.email || "",
-  });
+  const [formData, setFormData] = useState({});
   console.log(formData);
   console.log(filePerc);
   console.log(fileUploadError);
@@ -301,16 +295,7 @@ const Profile = () => {
   return (
     <Container maxWidth="md" className={classes.root}>
       <div className={classes.avatarContainer} onClick={handleAvatarClick}>
-        <Avatar
-          alt={currentUser.name}
-          src={
-            avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(
-              currentUser.name
-            )}&background=random&color=fff`
-          }
-          className={classes.avatar}
-        />
+        <Avatar alt={name} src={avatar} className={classes.avatar} />
       </div>
       <input
         onChange={handleAvatarChange}
