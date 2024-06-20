@@ -288,12 +288,12 @@ const Signin = () => {
                   <OAuth onGoogleSignIn={handleGoogleSignIn} />
               </Grid>
             </Grid>
-
+{/* 
             <Grid item xs>
               <CustomLink to="/forgot-password" variant="body2">
                 Forgot password?
               </CustomLink>
-            </Grid>
+            </Grid> */}
             <Grid item xs>
               <CustomLink component={Link} to="/signup" variant="body2">
                 {"Don't have an account? Sign Up"}
