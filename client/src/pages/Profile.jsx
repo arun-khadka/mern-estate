@@ -15,8 +15,14 @@ import {
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { signOut } from "../redux/user/userSlice";
+import {
+  signOut,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getStorage,
   ref,
@@ -111,11 +117,17 @@ const useStyles = makeStyles((theme) => ({
     marginBottom: theme.spacing(1),
   },
   deleteButton: {
-    color: theme.palette.error.main,
+    color: "#FFFFFF",
+    padding: 5,
+    backgroundColor: "#FF0000",
+    "&:hover": {
+      backgroundColor: "#FF1119",
+    },
   },
   delButton: {
     display: "flex",
     justifyContent: "end",
+    marginBottom: 6,
   },
   submit: {
     margin: theme.spacing(3, 0, 1),
@@ -173,12 +185,15 @@ const CssTextField = withStyles({
 
 const Profile = () => {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const fileRef = useRef(null);
   const navigate = useNavigate();
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [avatar, setAvatar] = useState();
   const [file, setFile] = useState(null);
   const [filePerc, setFilePerc] = useState(0);
+  const { currentUser } = useSelector((state) => state.user);
+
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   console.log(formData);
@@ -224,9 +239,6 @@ const Profile = () => {
     console.log("Deleting user account...");
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-  };
   const handleSignOut = () => {
     dispatch(signOut());
     navigate("/signin");
@@ -284,12 +296,30 @@ const Profile = () => {
     }
   };
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      dispatch(updateUserStart());
+      const res = await fetch(`api/user/update/${currentUser._id}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (!data.success) {
+        dispatch(updateUserFailure(data.message));
+        return;
+      }
+      dispatch(updateUserSuccess(data));
+    } catch (error) {
+      dispatch(updateUserFailure(error.message));
+    }
   };
 
   return (
@@ -316,9 +346,10 @@ const Profile = () => {
                 size="small"
                 fullWidth
                 label="Username"
+                defaultValue={currentUser.name}
                 name="username"
                 autoComplete="username"
-                // Add value and onChange handlers here
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12}>
@@ -329,9 +360,10 @@ const Profile = () => {
                 size="small"
                 fullWidth
                 label="Email Address"
+                defaultValue={currentUser.email}
                 name="email"
                 autoComplete="email"
-                // Add value and onChange handlers here
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12}>
@@ -344,7 +376,7 @@ const Profile = () => {
                 label="Password"
                 name="password"
                 type="password"
-                // Add value and onChange handlers here
+                onChange={handleChange}
               />
             </Grid>
             <Grid item xs={12}>
@@ -427,8 +459,8 @@ const Profile = () => {
           disableRipple
           size="small"
           type="submit"
-          variant="text"
-          color="primary"
+          variant="contained"
+          color="secondary"
           className={classes.deleteButton}
         >
           Delete Account

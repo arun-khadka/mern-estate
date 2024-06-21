@@ -30,10 +30,30 @@ const userSlice = createSlice({
       state.error = null;
       localStorage.removeItem("token"); // Clear the token from local storage
     },
+    updateUserStart: (state) => {
+      state.loading = true;
+    },
+    updateUserSuccess: (state, action) => {
+      state.currentUser = action.payload;
+      state.loading = false;
+      state.error = null;
+    },
+    updateUserFailure: (state, action) => {
+      state.error = action.payload;
+      state.loading = false;
+    },
   },
 });
 
-export const { signInStart, signInSuccess, signInFailure, setUser, signOut } =
-  userSlice.actions;
+export const {
+  signInStart,
+  signInSuccess,
+  signInFailure,
+  setUser,
+  signOut,
+  updateUserStart,
+  updateUserSuccess,
+  updateUserFailure,
+} = userSlice.actions;
 
 export default userSlice.reducer;

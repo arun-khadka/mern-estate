@@ -86,22 +86,20 @@ const CssTextField = withStyles({
     "& .MuiInput-underline:after": {
       borderBottomColor: "#7b1fa2", // Custom underline color when focused
     },
-    "& .MuiFilledInput-root": {
-      "&:before": {
-        borderBottomColor: "gray", // Default border color
-      },
-      "&:hover :not(.Mui-disabled):before": {
-        borderBottomColor: "#7b1fa2", // Border color when hovered
-      },
-      "&:after": {
-        borderBottomColor: "#7b1fa2", // Border color when focused
-      },
-      "&.Mui-error:before": {
-        borderBottomColor: "#f44336", // Border color when error
-      },
-      "&.Mui-error:after": {
-        borderBottomColor: "#f44336", // Border color when error
-      },
+    "&:before": {
+      borderBottomColor: "gray", // Default border color
+    },
+    "&:hover :not(.Mui-disabled):before": {
+      borderBottomColor: "#7b1fa2", // Border color when hovered
+    },
+    "&:after": {
+      borderBottomColor: "#7b1fa2", // Border color when focused
+    },
+    "&.Mui-error:before": {
+      borderBottomColor: "#f44336", // Border color when error
+    },
+    "&.Mui-error:after": {
+      borderBottomColor: "#f44336", // Border color when error
     },
     "& .MuiOutlinedInput-root": {
       "& fieldset": {
@@ -117,8 +115,19 @@ const CssTextField = withStyles({
         borderColor: "#f44336", // Border color when error
       },
     },
+    "& .MuiInputBase-input": {
+      backgroundColor: "#FFFFFF",
+      color: "#7b1fa2", // Custom input text color
+    },
     "& .MuiFormHelperText-root.Mui-error": {
       color: "#f44336", // Helper text color when error
+    },
+    "& .MuiIconButton-root": {
+      backgroundColor: "#f1f0f1", // Custom background color for visibility icon
+      color: "#7b1fa2", // Custom color for visibility icon
+      "&:hover": {
+        backgroundColor: "#e1e0e1", // Hover background color for visibility icon
+      },
     },
   },
 })(TextField);
@@ -252,6 +261,7 @@ const Signin = () => {
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
+                          disableRipple
                           aria-label="toggle password visibility"
                           onClick={handleClickShowPassword}
                           onMouseDown={handleMouseDownPassword}
@@ -285,10 +295,10 @@ const Signin = () => {
                 </Button>
               </Grid>
               <Grid item>
-                  <OAuth onGoogleSignIn={handleGoogleSignIn} />
+                <OAuth onGoogleSignIn={handleGoogleSignIn} />
               </Grid>
             </Grid>
-{/* 
+            {/* 
             <Grid item xs>
               <CustomLink to="/forgot-password" variant="body2">
                 Forgot password?

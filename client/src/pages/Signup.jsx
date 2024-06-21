@@ -111,8 +111,19 @@ const CssTextField = withStyles({
         borderColor: "#f44336", // Border color when error
       },
     },
+    "& .MuiInputBase-input": {
+      backgroundColor: "#FFFFFF",
+      color: "#7b1fa2", // Custom input text color
+    },
     "& .MuiFormHelperText-root.Mui-error": {
       color: "#f44336", // Helper text color when error
+    },
+    "& .MuiIconButton-root": {
+      backgroundColor: "#f1f0f1", // Custom background color for visibility icon
+      color: "#7b1fa2", // Custom color for visibility icon
+      "&:hover": {
+        backgroundColor: "#e1e0e1", // Hover background color for visibility icon
+      },
     },
   },
 })(TextField);
