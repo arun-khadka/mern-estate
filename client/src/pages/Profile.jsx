@@ -20,6 +20,9 @@ import {
   updateUserStart,
   updateUserSuccess,
   updateUserFailure,
+  deleteUserStart,
+  deleteUserSuccess,
+  deleteUserFailure,
 } from "../redux/user/userSlice";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -190,12 +193,13 @@ const Profile = () => {
   const navigate = useNavigate();
   const [avatarDialogOpen, setAvatarDialogOpen] = useState(false);
   const [avatar, setAvatar] = useState();
-  const [file, setFile] = useState(null);
+  const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const { currentUser } = useSelector((state) => state.user);
-
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
+
+  console.log(currentUser);
   console.log(formData);
   console.log(filePerc);
   console.log(fileUploadError);
@@ -235,8 +239,21 @@ const Profile = () => {
     console.log("Creating a new listing...");
   };
 
-  const handleDeleteAccount = () => {
-    console.log("Deleting user account...");
+  const handleDeleteAccount = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!data.success) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
+    }
   };
 
   const handleSignOut = () => {
@@ -258,7 +275,7 @@ const Profile = () => {
     }
   }, [file]);
 
-  const handleFileUpload = () => {
+  const handleFileUpload = (file) => {
     const storage = getStorage(app);
     const fileName = new Date().getTime() + file.name;
     const storagerRef = ref(storage, fileName);
@@ -283,19 +300,6 @@ const Profile = () => {
     );
   };
 
-  const handleAvatarUpload = (event) => {
-    const selectedFile = event.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-    }
-  };
-
-  const handleAvatarChange = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0]);
-    }
-  };
-
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
@@ -304,7 +308,7 @@ const Profile = () => {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`api/user/update/${currentUser._id}`, {
+      const res = await fetch(`/  api/user/update/${currentUser._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -325,15 +329,31 @@ const Profile = () => {
   return (
     <Container maxWidth="md" className={classes.root}>
       <div className={classes.avatarContainer} onClick={handleAvatarClick}>
-        <Avatar alt={name} src={avatar} className={classes.avatar} />
+        <input
+          onChange={(e) => setFile(e.target.files[0])}
+          type="file"
+          ref={fileRef}
+          accept="image/*"
+          hidden
+        />
+        <Avatar
+          onClick={() => fileRef.current.click()}
+          src={formData.avatar || currentUser.avatar}
+          alt="profile"
+          className={classes.avatar}
+        />
       </div>
-      <input
-        onChange={handleAvatarChange}
-        type="file"
-        ref={fileRef}
-        accept="image/*"
-        hidden
-      />
+      <div className="ml-40">
+        {fileUploadError ? (
+          <span className="text-red-700">Error image upload</span>
+        ) : filePerc > 0 && filePerc < 100 ? (
+          <span className="text-slate-700">{`Uploading ${filePerc}%`}</span>
+        ) : filePerc === 100 ? (
+          <span className="text-green-700">Image uploaded!</span>
+        ) : (
+          ""
+        )}
+      </div>
 
       <div className={classes.formContainer}>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
@@ -462,14 +482,13 @@ const Profile = () => {
           variant="contained"
           color="secondary"
           className={classes.deleteButton}
+          onClick={handleDeleteAccount}
         >
           Delete Account
           <IconButton
-            disableFocusRipple
-            disableTouchRipple
+            disableRipple
             aria-label="delete-account"
             className={classes.deleteButton}
-            onClick={handleDeleteAccount}
           >
             <DeleteIcon />
           </IconButton>

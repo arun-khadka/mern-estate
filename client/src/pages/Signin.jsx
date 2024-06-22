@@ -277,7 +277,7 @@ const Signin = () => {
                 />
               </Grid>
             </Grid>
-            <Grid justifyContent="space-between">
+            <Grid>
               <Grid item>
                 <Button
                   id="signInButton"
