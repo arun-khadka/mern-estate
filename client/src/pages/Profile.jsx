@@ -1,4 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
+import EditIcon from "@mui/icons-material/Edit";
+import { useNavigate } from "react-router-dom";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import { useDispatch, useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 import {
   Container,
@@ -12,9 +17,6 @@ import {
   IconButton,
   Avatar,
 } from "@material-ui/core";
-import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import {
   signOut,
   updateUserStart,
@@ -24,8 +26,6 @@ import {
   deleteUserSuccess,
   deleteUserFailure,
 } from "../redux/user/userSlice";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import {
   getStorage,
   ref,
@@ -199,11 +199,6 @@ const Profile = () => {
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
 
-  console.log(currentUser);
-  console.log(formData);
-  console.log(filePerc);
-  console.log(fileUploadError);
-
   const cards = [
     {
       id: 1,
@@ -242,7 +237,7 @@ const Profile = () => {
   const handleDeleteAccount = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+      const res = await fetch(`/api/user/delete/${currentUser.id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -261,10 +256,6 @@ const Profile = () => {
     navigate("/signin");
   };
 
-  const handleAvatarClick = () => {
-    fileRef.current.click();
-  };
-
   const handleAvatarClose = () => {
     setAvatarDialogOpen(false);
   };
@@ -274,6 +265,10 @@ const Profile = () => {
       handleFileUpload(file);
     }
   }, [file]);
+
+  useEffect(() => {
+    console.log("Current User:", currentUser); // Debugging line
+  }, [currentUser]);
 
   const handleFileUpload = (file) => {
     const storage = getStorage(app);
@@ -308,27 +303,36 @@ const Profile = () => {
     e.preventDefault();
     try {
       dispatch(updateUserStart());
-      const res = await fetch(`/  api/user/update/${currentUser._id}`, {
+      console.log("Updating user with ID:", currentUser.id); // Debugging line
+      console.log("Form data being sent:", JSON.stringify(formData)); // Debugging line
+
+      const res = await fetch(`/api/user/update/${currentUser.id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(formData),
       });
+
+      console.log("Response status:", res.status); // Debugging line
       const data = await res.json();
+      console.log("Response data:", data); // Debugging line
+
       if (!data.success) {
         dispatch(updateUserFailure(data.message));
         return;
       }
+      console.log("API response successful:", data); // Debugging line
       dispatch(updateUserSuccess(data));
     } catch (error) {
+      console.error("Caught error:", error.message); // Debugging line
       dispatch(updateUserFailure(error.message));
     }
   };
 
   return (
     <Container maxWidth="md" className={classes.root}>
-      <div className={classes.avatarContainer} onClick={handleAvatarClick}>
+      <div className={classes.avatarContainer}>
         <input
           onChange={(e) => setFile(e.target.files[0])}
           type="file"

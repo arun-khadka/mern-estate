@@ -23,6 +23,7 @@ import {
   signInStart,
   signInSuccess,
   signInFailure,
+  setUser
 } from "../redux/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 import OAuth from "../components/OAuth";
@@ -206,6 +207,13 @@ const Signin = () => {
         return;
       }
       dispatch(signInSuccess(data));
+      dispatch(setUser({
+        id: data.user._id,
+        name: data.user.username,
+        email: data.user.email,
+        photo: data.user.photoURL,
+      }));
+
     } catch (error) {
       toast.error(error.message);
       dispatch(signInFailure(error.message));

@@ -28,7 +28,7 @@ const userSlice = createSlice({
     signOut: (state) => {
       state.currentUser = null;
       state.error = null;
-      localStorage.removeItem("token"); // Clear the token from local storage
+      localStorage.removeItem("access_token"); // Clear the token from local storage
     },
     updateUserStart: (state) => {
       state.loading = true;
