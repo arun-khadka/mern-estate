@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import EditIcon from "@mui/icons-material/Edit";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useDispatch, useSelector } from "react-redux";
@@ -434,15 +434,17 @@ const Profile = () => {
       </div>
 
       <div className={classes.buttonContainer}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleCreateListing}
-          className={classes.createListingButton}
-        >
-          Create Listing
-          <AddOutlinedIcon sx={{ width: 30, height: 30 }} />
-        </Button>
+        <Link to="/create-listing">
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateListing}
+            className={classes.createListingButton}
+          >
+            Create Listing
+            <AddOutlinedIcon sx={{ width: 30, height: 30 }} />
+          </Button>
+        </Link>
       </div>
 
       <Grid container spacing={2}>

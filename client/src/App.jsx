@@ -9,6 +9,7 @@ import Profile from "./pages/Profile";
 import Error from "./pages/Error";
 import MainLayout from "./pages/MainLayout";
 import PrivateRoute from "./components/PrivateRoute";
+import CreateListing from "./pages/CreateListing";
 
 const theme = createTheme({
   palette: {
@@ -35,6 +36,7 @@ function App() {
             <Route path="about" element={<About />} />
             <Route element={<PrivateRoute />}>
               <Route path="profile" element={<Profile />} />
+              <Route path="create-listing" element={<CreateListing />} />
             </Route>
             <Route path="signin" element={<Signin />} />
             <Route path="signup" element={<Signup />} />
