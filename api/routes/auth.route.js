@@ -1,4 +1,4 @@
-import express, { application } from "express";
+import express from "express";
 import { check } from "express-validator";
 import { signup, signin, google } from "../controllers/auth.controller.js";
 

@@ -234,28 +234,6 @@ const Profile = () => {
     console.log("Creating a new listing...");
   };
 
-  const handleDeleteAccount = async () => {
-    try {
-      dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser.id}`, {
-        method: "DELETE",
-      });
-      const data = await res.json();
-      if (!data.success) {
-        dispatch(deleteUserFailure(data.message));
-        return;
-      }
-      dispatch(deleteUserSuccess(data));
-    } catch (error) {
-      dispatch(deleteUserFailure(error.message));
-    }
-  };
-
-  const handleSignOut = () => {
-    dispatch(signOut());
-    navigate("/signin");
-  };
-
   const handleAvatarClose = () => {
     setAvatarDialogOpen(false);
   };
@@ -327,6 +305,29 @@ const Profile = () => {
     } catch (error) {
       console.error("Caught error:", error.message); // Debugging line
       dispatch(updateUserFailure(error.message));
+    }
+  };
+
+  const handleSignOut = () => {
+    dispatch(signOut());
+    navigate("/signin");
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const res = await fetch(`/api/user/delete/${currentUser.id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!data.success) {
+        dispatch(deleteUserFailure(data.message));
+        return;
+      }
+      dispatch(deleteUserSuccess(data));
+      navigate("/signin");
+    } catch (error) {
+      dispatch(deleteUserFailure(error.message));
     }
   };
 
