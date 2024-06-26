@@ -251,8 +251,8 @@ const Profile = () => {
   const handleFileUpload = (file) => {
     const storage = getStorage(app);
     const fileName = new Date().getTime() + file.name;
-    const storagerRef = ref(storage, fileName);
-    const uploadTask = uploadBytesResumable(storagerRef, file);
+    const storageRef = ref(storage, fileName);
+    const uploadTask = uploadBytesResumable(storageRef, file);
     uploadTask.on(
       "state_changed",
       (snapshot) => {

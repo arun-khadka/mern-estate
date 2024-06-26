@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   Button,
@@ -10,9 +10,16 @@ import {
   FormControlLabel,
   Grid,
 } from "@mui/material";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import { styled } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import {
+  ref,
+  getDownloadURL,
+  getStorage,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { app } from "../firebase";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -21,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
   checkboxGrid: {
     display: "flex",
     alignItems: "center",
-    marginBottom: -10,
+    marginBottom: 1,
   },
 }));
 
@@ -112,7 +119,6 @@ const CustomButton = styled(Button)({
 });
 
 const CustomHeading = styled(Typography)({
-  // marginBottom: "25px",
   marginTop: "25px",
   color: "#7b1fa2", // Custom heading text color
   fontWeight: "normal", // Custom font weight
@@ -123,20 +129,27 @@ const CustomHeading = styled(Typography)({
 const CreateListing = () => {
   const classes = useStyles();
   const navigate = useNavigate();
+  const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    regularPrice: "",
-    address: "",
-    bedrooms: "",
-    bathrooms: "",
-    type: "house",
-    parking: false,
-    furnished: false,
-    offer: false,
+    // name: "",
+    // description: "",
+    // regularPrice: "",
+    // address: "",
+    // bedrooms: "",
+    // bathrooms: "",
+    // type: "house",
+    // parking: false,
+    // furnished: false,
+    // offer: false,
     imageUrls: [],
-    userRef: "",
+    // userRef: "",
   });
+  console.log(formData);
+  const [imageUploadError, setImageUploadError] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0); // Scroll to the top when component mounts
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -146,15 +159,52 @@ const CreateListing = () => {
     });
   };
 
-  const handleImageChange = (event) => {
-    const files = event.target.files;
-    let imagesArray = [];
-    for (let i = 0; i < files.length; i++) {
-      imagesArray.push(files[i]);
+  const handleImageUpload = () => {
+    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+      const promises = [];
+
+      for (let i = 0; i < files.length; i++) {
+        promises.push(storeImage(files[i]));
+      }
+      Promise.all(promises)
+        .then((urls) => {
+          setFormData({
+            ...formData,
+            imageUrls: formData.imageUrls.concat(urls),
+          });
+          setImageUploadError(false);
+        })
+        .catch((err) => {
+          setImageUploadError("Image upload failed!(must be less than 2 MB)");
+        });
+    } else {
+      setImageUploadError("You can only upload 6 images per listing");
     }
-    setFormData({
-      ...formData,
-      images: imagesArray,
+  };
+
+  const storeImage = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage(app);
+      const fileName = file.name;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(progress);
+        },
+        (error) => {
+          reject(error);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+            console.log(downloadURL);
+          });
+        }
+      );
     });
   };
 
@@ -167,203 +217,197 @@ const CreateListing = () => {
   };
 
   return (
-    <Container maxWidth="sm" className={classes.container}>
-      <Box>
-        <CustomHeading variant="h5" component="h1" gutterBottom>
-          Create a new Listing
-        </CustomHeading>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <CssTextField
-                name="name"
-                label="Name"
-                variant="outlined"
-                fullWidth
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <CssTextField
-                name="description"
-                label="Description"
-                fullWidth
-                multiline
-                rows={4}
-                value={formData.description}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <CssTextField
-                name="address"
-                label="Address"
-                fullWidth
-                value={formData.address}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <CssTextField
-                name="regularPrice"
-                label="Regular Price"
-                type="number"
-                fullWidth
-                value={formData.regularPrice}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <CssTextField
-                name="discountPrice"
-                label="Discount Price"
-                type="number"
-                fullWidth
-                value={formData.discountPrice}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <CssTextField
-                name="bedrooms"
-                label="Bedrooms"
-                type="number"
-                fullWidth
-                value={formData.bedrooms}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <CssTextField
-                name="bathrooms"
-                label="Bathrooms"
-                type="number"
-                fullWidth
-                value={formData.bathrooms}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <CssTextField
-                select
-                name="type"
-                label="Type"
-                fullWidth
-                value={formData.type}
-                onChange={handleChange}
-                required
-              >
-                <MenuItem value="house">Sell</MenuItem>
-                <MenuItem value="condo">Rent</MenuItem>
-              </CssTextField>
-            </Grid>
-            <Grid item xs={12} className={classes.checkboxGrid}>
-              <FormControlLabel
-                control={
-                  <CustomCheckbox
-                    checked={formData.furnished}
+    <Container maxWidth="lg" className={classes.container}>
+      <CustomHeading variant="h5" component="h1" gutterBottom>
+        Create a new Listing
+      </CustomHeading>
+      <Grid container spacing={4}>
+        <Grid item xs={12} md={7}>
+          <Box>
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={3}>
+                <Grid item xs={12}>
+                  <CssTextField
+                    name="name"
+                    label="Name"
+                    variant="outlined"
+                    fullWidth
+                    value={formData.name}
                     onChange={handleChange}
-                    disableRipple
-                    name="furnished"
+                    required
                   />
-                }
-                label="Furnished"
-              />
-            </Grid>
-            <Grid item xs={12} className={classes.checkboxGrid}>
-              <FormControlLabel
-                control={
-                  <CustomCheckbox
-                    checked={formData.parking}
+                </Grid>
+                <Grid item xs={12}>
+                  <CssTextField
+                    name="description"
+                    label="Description"
+                    fullWidth
+                    multiline
+                    rows={4}
+                    value={formData.description}
                     onChange={handleChange}
-                    disableRipple
-                    name="parking"
+                    required
                   />
-                }
-                label="Parking"
-              />
-            </Grid>
-
-            <Grid item xs={12} className={classes.checkboxGrid}>
-              <FormControlLabel
-                control={
-                  <CustomCheckbox
-                    checked={formData.offer}
+                </Grid>
+                <Grid item xs={12}>
+                  <CssTextField
+                    name="address"
+                    label="Address"
+                    fullWidth
+                    value={formData.address}
                     onChange={handleChange}
-                    disableRipple
-                    name="offer"
+                    required
                   />
-                }
-                label="Offer"
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="body1" gutterBottom>
-                Total six images supported
-              </Typography>
-
-              <div style={{}}>
-                <CssTextField
-                  disabled
-                  fullWidth
-                  value={
-                    formData.imageUrls.length > 0
-                      ? `${formData.imageUrls.length} image(s) selected`
-                      : ""
-                  }
-                  InputProps={{
-                    endAdornment: (
-                      <input
-                        id="upload-file"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        multiple
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <CssTextField
+                    name="regularPrice"
+                    label="Regular Price"
+                    type="number"
+                    fullWidth
+                    value={formData.regularPrice}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <CssTextField
+                    name="discountPrice"
+                    label="Discount Price"
+                    type="number"
+                    fullWidth
+                    value={formData.discountPrice}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <CssTextField
+                    name="bedrooms"
+                    label="Bedrooms"
+                    type="number"
+                    fullWidth
+                    value={formData.bedrooms}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <CssTextField
+                    name="bathrooms"
+                    label="Bathrooms"
+                    type="number"
+                    fullWidth
+                    value={formData.bathrooms}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <CssTextField
+                    select
+                    name="type"
+                    label="Type"
+                    fullWidth
+                    value={formData.type}
+                    onChange={handleChange}
+                    required
+                  >
+                    <MenuItem value="house">Sell</MenuItem>
+                    <MenuItem value="condo">Rent</MenuItem>
+                  </CssTextField>
+                </Grid>
+                <Grid item xs={12} className={classes.checkboxGrid}>
+                  <FormControlLabel
+                    control={
+                      <CustomCheckbox
+                        checked={formData.furnished}
+                        onChange={handleChange}
+                        disableRipple
+                        name="furnished"
                       />
-                    ),
-                  }}
-                />
-                <CustomButton
-                  variant="contained"
-                  component="label"
-                  color="primary"
-                >
-                  Upload
-                </CustomButton>
-              </div>
-            </Grid>
-            <Grid item xs={12}>
+                    }
+                    label="Furnished"
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.checkboxGrid}>
+                  <FormControlLabel
+                    control={
+                      <CustomCheckbox
+                        checked={formData.parking}
+                        onChange={handleChange}
+                        disableRipple
+                        name="parking"
+                      />
+                    }
+                    label="Parking"
+                  />
+                </Grid>
+                <Grid item xs={12} className={classes.checkboxGrid}>
+                  <FormControlLabel
+                    control={
+                      <CustomCheckbox
+                        checked={formData.offer}
+                        onChange={handleChange}
+                        disableRipple
+                        name="offer"
+                      />
+                    }
+                    label="Offer"
+                  />
+                </Grid>
+              </Grid>
+            </form>
+          </Box>
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <Box>
+            <Typography variant="body1" gutterBottom>
+              Total six images supported
+            </Typography>
+            <div>
               <CssTextField
-                name="userRef"
-                label="User Reference"
+                disabled
                 fullWidth
-                value={formData.userRef}
-                onChange={handleChange}
-                required
+                InputProps={{
+                  endAdornment: (
+                    <input
+                      id="upload-file"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setFiles(e.target.files)}
+                      multiple
+                    />
+                  ),
+                }}
               />
-            </Grid>
-            <Grid item xs={12}>
               <CustomButton
-                type="submit"
+                type="button"
                 variant="contained"
-                size="large"
+                component="label"
                 color="primary"
-                fullWidth
+                onClick={handleImageUpload}
               >
-                Create Listing
+                Upload
               </CustomButton>
-            </Grid>
-          </Grid>
-        </form>
-      </Box>
+            </div>
+            <p className="text-red-700 text-sm">
+              {" "}
+              {imageUploadError && imageUploadError}
+            </p>
+            <CustomButton
+              type="submit"
+              variant="contained"
+              size="large"
+              color="primary"
+              fullWidth
+              onClick={handleSubmit}
+            >
+              Create Listing
+            </CustomButton>
+          </Box>
+        </Grid>
+      </Grid>
     </Container>
   );
 };
