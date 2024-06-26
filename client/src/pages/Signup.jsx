@@ -300,6 +300,7 @@ const Signup = () => {
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
+                          disableRipple
                           aria-label="toggle password visibility"
                           onClick={handleClickShowPassword}
                           onMouseDown={handleMouseDownPassword}
