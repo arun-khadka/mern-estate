@@ -49,9 +49,8 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 400,
     margin: "auto", // Center the form horizontally
     padding: theme.spacing(3),
-    backgroundColor: "#f1f0f1",
     borderRadius: theme.shape.borderRadius,
-    // boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
+    border: "1px solid #7b1fa2 ",
   },
   submit: {
     margin: theme.spacing(3, 0, 1),
@@ -300,11 +299,16 @@ const Signup = () => {
                     endAdornment: (
                       <InputAdornment position="end">
                         <IconButton
-                          disableRipple
                           aria-label="toggle password visibility"
                           onClick={handleClickShowPassword}
                           onMouseDown={handleMouseDownPassword}
                           edge="end"
+                          style={{
+                            marginRight: -8,
+                            padding: 0,
+                            disableRipple: true,
+                          }}
+                          disableRipple
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>

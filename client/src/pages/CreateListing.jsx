@@ -9,6 +9,7 @@ import {
   MenuItem,
   FormControlLabel,
   Grid,
+  IconButton,
 } from "@mui/material";
 import { makeStyles } from "@material-ui/core/styles";
 import { styled } from "@mui/material/styles";
@@ -18,8 +19,12 @@ import {
   getDownloadURL,
   getStorage,
   uploadBytesResumable,
+  deleteObject,
 } from "firebase/storage";
 import { app } from "../firebase";
+import ClearIcon from "@mui/icons-material/Clear";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { CircularProgress } from "@mui/material";
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -30,53 +35,76 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     marginBottom: 1,
   },
+  imageList: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: theme.spacing(1),
+  },
+  imageContainer: {
+    position: "relative",
+    display: "inline-block",
+  },
+  deleteIcon: {
+    position: "absolute",
+    top: 4,
+    right: 4,
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    borderRadius: "50%",
+    display: "none",
+  },
+  image: {
+    width: "100px",
+    height: "100px",
+    objectFit: "cover",
+    borderRadius: "8px",
+  },
 }));
 
 const CssTextField = styled(TextField)({
   "& label.Mui-focused": {
-    color: "#7b1fa2", // Custom label color when focused
+    color: "#7b1fa2",
   },
   "& .MuiInput-underline:after": {
-    borderBottomColor: "#7b1fa2", // Custom underline color when focused
+    borderBottomColor: "#7b1fa2",
   },
   "&:before": {
-    borderBottomColor: "gray", // Default border color
+    borderBottomColor: "gray",
   },
   "&:hover:not(.Mui-disabled):before": {
-    borderBottomColor: "#7b1fa2", // Border color when hovered
+    borderBottomColor: "#7b1fa2",
   },
   "&:after": {
-    borderBottomColor: "#7b1fa2", // Border color when focused
+    borderBottomColor: "#7b1fa2",
   },
   "&.Mui-error:before": {
-    borderBottomColor: "#f44336", // Border color when error
+    borderBottomColor: "#f44336",
   },
   "&.Mui-error:after": {
-    borderBottomColor: "#f44336", // Border color when error
+    borderBottomColor: "#f44336",
   },
   "& .MuiOutlinedInput-root": {
     "& fieldset": {
-      borderColor: "gray", // Default border color
+      borderColor: "#7b1fa2",
     },
     "&:hover fieldset": {
-      borderColor: "#7b1fa2", // Border color when hovered
+      borderColor: "#7b1fa2",
     },
     "&.Mui-focused fieldset": {
-      borderColor: "#7b1fa2", // Border color when focused
+      borderColor: "#7b1fa2",
     },
     "&.Mui-error fieldset": {
-      borderColor: "#f44336", // Border color when error
+      borderColor: "#f44336",
     },
   },
   "& .MuiInputBase-input": {
     backgroundColor: "#FFFFFF",
-    color: "#7b1fa2", // Custom input text color
-    paddingRight: 36, // Adjust padding to accommodate button
+    color: "#7b1fa2",
+    paddingRight: 36,
     position: "relative",
     zIndex: 0,
   },
   "& .MuiFormHelperText-root.Mui-error": {
-    color: "#f44336", // Helper text color when error
+    color: "#f44336",
   },
   "& .MuiIconButton-root": {
     position: "absolute",
@@ -92,21 +120,24 @@ const CssTextField = styled(TextField)({
   "& input[type=file]": {
     position: "absolute",
     top: "75%",
-    right: 48, // Adjust right position to create margin
+    right: 48,
     transform: "translateY(-50%)",
     opacity: 1,
     cursor: "pointer",
+    color: "#7b1fa2",
     zIndex: 1,
-    width: "calc(100% - 56px)", // Adjust width to match TextField
-    height: "100%", // Ensure full height
+    width: "calc(100% - 56px)",
+    height: "100%",
   },
 });
+
 const CustomCheckbox = styled(Checkbox)(({ theme }) => ({
+  color: "#7b1fa2",
   "&.Mui-checked": {
     color: "#7b1fa2",
   },
   "& .MuiSvgIcon-root": {
-    fontSize: 20, // Adjust size of the checkbox
+    fontSize: 20,
   },
 }));
 
@@ -118,37 +149,51 @@ const CustomButton = styled(Button)({
   },
 });
 
+const CustomOutlinedButton = styled(Button)({
+  margin: "16px 0 8px",
+  borderColor: "#8e24aa",
+  color: "#8e24aa",
+  "&:hover": {
+    borderColor: "#7b1fa2",
+    color: "#7b1fa2",
+  },
+  "&:disabled": {
+    border: "1px solid #7b1fa2",
+    opacity: 0.5,
+  },
+});
+
 const CustomHeading = styled(Typography)({
   marginTop: "25px",
-  color: "#7b1fa2", // Custom heading text color
-  fontWeight: "normal", // Custom font weight
-  fontSize: "2.5rem", // Custom font size
-  textAlign: "center", // Center align text
+  color: "#7b1fa2",
+  fontWeight: "normal",
+  fontSize: "2.5rem",
+  textAlign: "center",
 });
 
 const CreateListing = () => {
   const classes = useStyles();
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    // name: "",
-    // description: "",
-    // regularPrice: "",
-    // address: "",
-    // bedrooms: "",
-    // bathrooms: "",
-    // type: "house",
-    // parking: false,
-    // furnished: false,
-    // offer: false,
+    name: "",
+    description: "",
+    regularPrice: "",
+    address: "",
+    bedrooms: "",
+    bathrooms: "",
+    type: "house",
+    parking: false,
+    furnished: false,
+    offer: false,
     imageUrls: [],
-    // userRef: "",
+    userRef: "",
   });
-  console.log(formData);
   const [imageUploadError, setImageUploadError] = useState(false);
 
   useEffect(() => {
-    window.scrollTo(0, 0); // Scroll to the top when component mounts
+    window.scrollTo(0, 0);
   }, []);
 
   const handleChange = (e) => {
@@ -160,7 +205,13 @@ const CreateListing = () => {
   };
 
   const handleImageUpload = () => {
+    if (files.length === 0) {
+      setImageUploadError("No items selected!");
+      return;
+    }
     if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+      setLoading(true);
+      setImageUploadError(false);
       const promises = [];
 
       for (let i = 0; i < files.length; i++) {
@@ -173,12 +224,14 @@ const CreateListing = () => {
             imageUrls: formData.imageUrls.concat(urls),
           });
           setImageUploadError(false);
+          setLoading(false);
         })
         .catch((err) => {
           setImageUploadError("Image upload failed!(must be less than 2 MB)");
         });
     } else {
-      setImageUploadError("You can only upload 6 images per listing");
+      setImageUploadError("You can only upload 6 images per listing!");
+      setLoading(false);
     }
   };
 
@@ -208,12 +261,25 @@ const CreateListing = () => {
     });
   };
 
+  const deleteImage = (url) => {
+    const storage = getStorage(app);
+    const storageRef = ref(storage, url);
+    deleteObject(storageRef)
+      .then(() => {
+        setFormData({
+          ...formData,
+          imageUrls: formData.imageUrls.filter((imageUrl) => imageUrl !== url),
+        });
+      })
+      .catch((error) => {
+        console.error("Error deleting image:", error);
+      });
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    // Handle the form submission logic (e.g., API call)
     console.log("Listing created:", formData);
-    // Navigate to another page or show a success message
-    navigate("/listings"); // Example route
+    navigate("/listings");
   };
 
   return (
@@ -222,7 +288,7 @@ const CreateListing = () => {
         Create a new Listing
       </CustomHeading>
       <Grid container spacing={4}>
-        <Grid item xs={12} md={7}>
+        <Grid item xs={12} md={6}>
           <Box>
             <form onSubmit={handleSubmit}>
               <Grid container spacing={3}>
@@ -241,9 +307,9 @@ const CreateListing = () => {
                   <CssTextField
                     name="description"
                     label="Description"
-                    fullWidth
+                    variant="outlined"
                     multiline
-                    rows={4}
+                    fullWidth
                     value={formData.description}
                     onChange={handleChange}
                     required
@@ -318,43 +384,38 @@ const CreateListing = () => {
                   </CssTextField>
                 </Grid>
                 <Grid item xs={12} className={classes.checkboxGrid}>
-                  <FormControlLabel
-                    control={
-                      <CustomCheckbox
-                        checked={formData.furnished}
-                        onChange={handleChange}
-                        disableRipple
-                        name="furnished"
-                      />
-                    }
-                    label="Furnished"
-                  />
-                </Grid>
-                <Grid item xs={12} className={classes.checkboxGrid}>
-                  <FormControlLabel
-                    control={
-                      <CustomCheckbox
-                        checked={formData.parking}
-                        onChange={handleChange}
-                        disableRipple
-                        name="parking"
-                      />
-                    }
-                    label="Parking"
-                  />
-                </Grid>
-                <Grid item xs={12} className={classes.checkboxGrid}>
-                  <FormControlLabel
-                    control={
-                      <CustomCheckbox
-                        checked={formData.offer}
-                        onChange={handleChange}
-                        disableRipple
-                        name="offer"
-                      />
-                    }
-                    label="Offer"
-                  />
+                  <Box display="flex" alignItems="center" flexWrap="wrap">
+                    <FormControlLabel
+                      control={
+                        <CustomCheckbox
+                          checked={formData.furnished}
+                          onChange={handleChange}
+                          name="furnished"
+                        />
+                      }
+                      label="Furnished"
+                    />
+                    <FormControlLabel
+                      control={
+                        <CustomCheckbox
+                          checked={formData.parking}
+                          onChange={handleChange}
+                          name="parking"
+                        />
+                      }
+                      label="Parking"
+                    />
+                    <FormControlLabel
+                      control={
+                        <CustomCheckbox
+                          checked={formData.offer}
+                          onChange={handleChange}
+                          name="offer"
+                        />
+                      }
+                      label="Offer"
+                    />
+                  </Box>
                 </Grid>
               </Grid>
             </form>
@@ -381,20 +442,53 @@ const CreateListing = () => {
                   ),
                 }}
               />
-              <CustomButton
-                type="button"
-                variant="contained"
-                component="label"
-                color="primary"
-                onClick={handleImageUpload}
-              >
-                Upload
-              </CustomButton>
+              <label htmlFor="upload-image-button">
+                <CustomOutlinedButton
+                  variant="outlined"
+                  component="span"
+                  startIcon={
+                    loading ? (
+                      <CircularProgress size={24} sx={{ color: "#7b1fa2" }} />
+                    ) : (
+                      <CloudUploadIcon />
+                    )
+                  }
+                  onClick={handleImageUpload}
+                  // disabled={loading}
+                  sx={{ color: loading ? "#7b1fa2" : "#7b1fa2" }}
+                >
+                  {loading ? "Uploading..." : "Upload Images"}
+                </CustomOutlinedButton>
+              </label>
             </div>
             <p className="text-red-700 text-sm">
-              {" "}
               {imageUploadError && imageUploadError}
             </p>
+            <div className={classes.imageList}>
+              {formData.imageUrls.length > 0 &&
+                formData.imageUrls.map((url) => (
+                  <div key={url} className={classes.imageContainer}>
+                    <img
+                      src={url}
+                      alt="listing image"
+                      className={classes.image}
+                    />
+                    <IconButton
+                      size="small"
+                      className={classes.deleteIcon}
+                      onClick={() => deleteImage(url)}
+                      style={{
+                        position: "absolute",
+                        top: -4,
+                        right: -4,
+                        color: "#ccc",
+                      }}
+                    >
+                      <ClearIcon fontSize="medium" />
+                    </IconButton>
+                  </div>
+                ))}
+            </div>
             <CustomButton
               type="submit"
               variant="contained"
@@ -403,7 +497,7 @@ const CreateListing = () => {
               fullWidth
               onClick={handleSubmit}
             >
-              Create Listing
+              create listing
             </CustomButton>
           </Box>
         </Grid>
