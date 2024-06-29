@@ -37,49 +37,51 @@ import { app } from "../firebase";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    marginTop: theme.spacing(12),
+    marginTop: theme.spacing(8),
     backgroundColor: "#f8f8f8",
-    
+    width: "60%",
+    marginLeft: theme.spacing(5),
   },
   avatar: {
-    width: theme.spacing(14),
-    height: theme.spacing(14),
-    marginBottom: theme.spacing(2),
+    width: theme.spacing(10),
+    height: theme.spacing(10),
+    marginBottom: theme.spacing(1),
+    marginTop: theme.spacing(0),
   },
   avatarContainer: {
     display: "flex",
-    justifyContent: "center",
-    marginBottom: theme.spacing(2),
+    justifyContent: "start",
+    marginLeft: theme.spacing(2),
     cursor: "pointer",
   },
   formContainer: {
     width: "100%",
     maxWidth: 400,
-    margin: "auto", // Center the form horizontally
-    padding: theme.spacing(3),
+    // margin: "auto",
+    padding: theme.spacing(1),
     borderRadius: theme.shape.borderRadius,
   },
   form: {
-    width: "100%",
+    width: "70%",
     marginBottom: theme.spacing(2),
   },
   card: {
     position: "relative",
     display: "flex",
     width: "100%",
-    height: "95%",
+    height: "90%",
     justifyContent: "space-between",
     borderRadius: theme.shape.borderRadius,
-    boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
-    marginBottom: theme.spacing(1),
+    boxShadow: `0 1px 4px ${theme.palette.primary.main}`,
+    marginBottom: 1,
     transition: "box-shadow 0.3s",
     "&:hover": {
-      boxShadow: `0 6px 12px ${theme.palette.primary.main}`,
+      boxShadow: `0 3px 8px ${theme.palette.primary.main}`,
     },
   },
   cardMedia: {
     width: "35%",
-    height: 260,
+    height: 230,
     objectFit: "cover",
   },
   cardDetails: {
@@ -103,6 +105,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#7b1fa2",
     },
+    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
   },
   editButton: {
     position: "absolute",
@@ -112,8 +115,7 @@ const useStyles = makeStyles((theme) => ({
   },
   signOutButton: {
     display: "flex",
-    justifyContent: "center",
-    marginBottom: theme.spacing(1),
+    justifyContent: "end",
   },
   deleteButton: {
     color: "#FFFFFF",
@@ -134,6 +136,109 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#8e24aa",
     "&:hover": {
       backgroundColor: "#7b1fa2",
+    },
+  },
+  chat: {
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    "& .messages": {
+      flex: 1,
+      display: "flex",
+      flexDirection: "column",
+      gap: theme.spacing(2.5),
+      overflowY: "scroll",
+      "& h1": {
+        fontWeight: 300,
+      },
+      "& .message": {
+        backgroundColor: "white",
+        padding: theme.spacing(2.5),
+        borderRadius: "0.675rem",
+        display: "flex",
+        alignItems: "center",
+        gap: theme.spacing(2.5),
+        cursor: "pointer",
+        "& img": {
+          width: "2.5rem",
+          height: "2.5rem",
+          borderRadius: "50%",
+          objectFit: "cover",
+        },
+        "& span": {
+          fontWeight: "bold",
+        },
+      },
+    },
+    "& .chatBox": {
+      flex: 1,
+      backgroundColor: "white",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      "& .top": {
+        backgroundColor: "#f7c14b85",
+        padding: theme.spacing(2.5),
+        fontWeight: "bold",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        "& .user": {
+          display: "flex",
+          alignItems: "center",
+          gap: theme.spacing(2.5),
+          "& img": {
+            width: "1.875rem",
+            height: "1.875rem",
+            borderRadius: "50%",
+            objectFit: "cover",
+          },
+        },
+        "& .close": {
+          cursor: "pointer",
+        },
+      },
+      "& .center": {
+        overflowY: "scroll",
+        height: "21.875rem",
+        padding: theme.spacing(2.5),
+        display: "flex",
+        flexDirection: "column",
+        gap: theme.spacing(2.5),
+        "& .chatMessage": {
+          width: "50%",
+          "&.own": {
+            alignSelf: "flex-end",
+            textAlign: "right",
+          },
+          "& span": {
+            fontSize: "0.75rem",
+            backgroundColor: "#f7c14b85",
+            padding: theme.spacing(0.5),
+            borderRadius: "0.3125rem",
+          },
+        },
+      },
+      "& .bottom": {
+        borderTop: "0.125rem solid #f7c14b85",
+        height: "3.75rem",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        "& textarea": {
+          flex: 3,
+          height: "100%",
+          border: "none",
+          padding: theme.spacing(2.5),
+        },
+        "& button": {
+          flex: 1,
+          backgroundColor: "#f7c14b85",
+          height: "100%",
+          border: "none",
+          cursor: "pointer",
+        },
+      },
     },
   },
 }));
@@ -195,6 +300,7 @@ const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
+  const [chat, setChat] = useState(true);
 
   const cards = [
     {
@@ -330,6 +436,19 @@ const Profile = () => {
 
   return (
     <Container maxWidth="md" className={classes.root}>
+      <div className={classes.signOutButton}>
+        <Button
+          disableRipple
+          size="normal"
+          type="submit"
+          variant="contained"
+          color="secondary"
+          onClick={handleSignOut}
+          style={{ marginTop: "10px" }}
+        >
+          Sign out
+        </Button>
+      </div>
       <div className={classes.avatarContainer}>
         <input
           onChange={(e) => setFile(e.target.files[0])}
@@ -360,10 +479,16 @@ const Profile = () => {
       <div className={classes.formContainer}>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
           <Grid container spacing={1}>
+            <Typography
+              variant="h5"
+              style={{ marginLeft: 5, color: "#7b1fa2" }}
+            >
+              User Details
+            </Typography>
             <Grid item xs={12}>
               <CssTextField
                 id="username"
-                variant="outlined"
+                variant="standard"
                 margin="dense"
                 size="small"
                 fullWidth
@@ -377,7 +502,7 @@ const Profile = () => {
             <Grid item xs={12}>
               <CssTextField
                 id="email"
-                variant="outlined"
+                variant="standard"
                 margin="dense"
                 size="small"
                 fullWidth
@@ -391,7 +516,7 @@ const Profile = () => {
             <Grid item xs={12}>
               <CssTextField
                 id="password"
-                variant="outlined"
+                variant="standard"
                 margin="dense"
                 size="small"
                 fullWidth
@@ -416,18 +541,6 @@ const Profile = () => {
             </Grid>
           </Grid>
         </form>
-        <div className={classes.signOutButton}>
-          <Button
-            disableRipple
-            size="small"
-            type="submit"
-            variant="contained"
-            color="secondary"
-            onClick={handleSignOut}
-          >
-            Sign out
-          </Button>
-        </div>
       </div>
 
       <div className={classes.buttonContainer}>
@@ -444,7 +557,15 @@ const Profile = () => {
         </Link>
       </div>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={0}>
+        <Typography
+          variant="h5"
+          color="secondary"
+          style={{ marginLeft: "10px", fontWeight: 600, color: "#7b1fa2" }}
+        >
+          My Listings
+        </Typography>
+
         {cards.map((card) => (
           <Grid item xs={12} key={card.id}>
             <Card className={classes.card}>
@@ -476,7 +597,7 @@ const Profile = () => {
                       style={{ marginRight: 2 }}
                       className={classes.editButton}
                     >
-                      <EditIcon />
+                      <EditIcon sx={{ fontSize: 30 }} />
                     </IconButton>
                   </Tooltip>
 
@@ -501,7 +622,7 @@ const Profile = () => {
                       size="small"
                       style={{ color: "red", marginRight: 8, marginBottom: 6 }}
                     >
-                      <DeleteIcon />
+                      <DeleteIcon sx={{ fontSize: 30 }} />
                     </IconButton>
                   </Tooltip>
                 </div>
@@ -535,6 +656,114 @@ const Profile = () => {
             <DeleteIcon style={{ fontSize: 20, color: "#FFFFFF" }} />
           </IconButton>
         </Button>
+      </div>
+
+      <div className={classes.chat}>
+        <div className="messages">
+          <h1>Messages</h1>
+          <div className="message">
+            <img
+              src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              alt=""
+            />
+            <span>John Dog</span>
+            <p>Hi, I have a really good offer...</p>
+          </div>
+          <div className="message">
+            <img
+              src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              alt=""
+            />
+            <span>John Dog</span>
+            <p>Hi, I have a really good offer...</p>
+          </div>
+          <div className="message">
+            <img
+              src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              alt=""
+            />
+            <span>John Dog</span>
+            <p>Hi, I have a really good offer...</p>
+          </div>
+          <div className="message">
+            <img
+              src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              alt=""
+            />
+            <span>John Dog</span>
+            <p>Hi, I have a really good offer...</p>
+          </div>
+          <div className="message">
+            <img
+              src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              alt=""
+            />
+            <span>John Dog</span>
+            <p>Hi, I have a really good offer...</p>
+          </div>
+          <div className="message">
+            <img
+              src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              alt=""
+            />
+            <span>John Dog</span>
+            <p>Hi, I have a really good offer...</p>
+          </div>
+          <div className="message">
+            <img
+              src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              alt=""
+            />
+            <span>John Dog</span>
+            <p>Hi, I have a really good offer...</p>
+          </div>
+        </div>
+        {chat && (
+          <div className="chatBox">
+            <div className="top">
+              <div className="user">
+                <img
+                  src="https://images.pexels.com/photos/91227/pexels-photo-91227.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                  alt=""
+                />
+                John Dog
+              </div>
+              <span className="close" onClick={() => setChat(null)}>
+                X
+              </span>
+            </div>
+            <div className="center">
+              <div className="chatMessage own">
+                <p>Hi, I have an another offer...</p>
+                <span>1 hour ago</span>
+              </div>
+              <div className="chatMessage">
+                <p>Hi, I have an another offer...</p>
+                <span>1 hour ago</span>
+              </div>
+              <div className="chatMessage">
+                <p>Hi, I have an another offer...</p>
+                <span>1 hour ago</span>
+              </div>
+              <div className="chatMessage own">
+                <p>Hi, I have an another offer...</p>
+                <span>1 hour ago</span>
+              </div>
+              <div className="chatMessage">
+                <p>Hi, I have an another offer...</p>
+                <span>1 hour ago</span>
+              </div>
+              <div className="chatMessage own">
+                <p>Hi, I have an another offer...</p>
+                <span>1 hour ago</span>
+              </div>
+            </div>
+            <div className="bottom">
+              <textarea></textarea>
+              <button>Send</button>
+            </div>
+          </div>
+        )}
       </div>
     </Container>
   );

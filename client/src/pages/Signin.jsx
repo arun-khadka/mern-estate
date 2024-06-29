@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(2),
   },
   formContainer: {
     width: "100%",
@@ -58,9 +58,10 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
     borderRadius: theme.shape.borderRadius,
     border: "1px solid #7b1fa2 ",
+    boxShadow: `0 0 4px ${theme.palette.primary.main}`,
   },
   submit: {
-    margin: theme.spacing(3, 0, 1),
+    margin: theme.spacing(3, 0, 0),
     backgroundColor: "#8e24aa",
     "&:hover": {
       backgroundColor: "#7b1fa2",
