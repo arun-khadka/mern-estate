@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { Link, useNavigate } from "react-router-dom";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Tooltip from "@mui/material/Tooltip";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
 import { useDispatch, useSelector } from "react-redux";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -34,14 +35,11 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 
-// allow read;
-// allow write: if
-// request.resource.size < 2 * 1024 * 1024 &&
-// request.resource.contentType.matches("images/.*")
-
 const useStyles = makeStyles((theme) => ({
   root: {
     marginTop: theme.spacing(12),
+    backgroundColor: "#f8f8f8",
+    
   },
   avatar: {
     width: theme.spacing(14),
@@ -59,9 +57,7 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: 400,
     margin: "auto", // Center the form horizontally
     padding: theme.spacing(3),
-    backgroundColor: "#f9f9f9",
     borderRadius: theme.shape.borderRadius,
-    // boxShadow: `0 2px 4px ${theme.palette.primary.main}`,
   },
   form: {
     width: "100%",
@@ -126,6 +122,7 @@ const useStyles = makeStyles((theme) => ({
     "&:hover": {
       backgroundColor: "#FF1119",
     },
+    boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.8)",
   },
   delButton: {
     display: "flex",
@@ -442,7 +439,7 @@ const Profile = () => {
             className={classes.createListingButton}
           >
             Create Listing
-            <AddOutlinedIcon sx={{ width: 30, height: 30 }} />
+            <AddOutlinedIcon sx={{ width: 25, height: 30 }} />
           </Button>
         </Link>
       </div>
@@ -468,19 +465,52 @@ const Profile = () => {
                     {card.price}
                   </Typography>
                 </CardContent>
-                <IconButton
-                  aria-label="edit"
-                  color="primary"
-                  size="small"
-                  className={classes.editButton}
+                <div
+                  className={classes.cardActions}
+                  style={{ display: "flex", justifyContent: "flex-end" }}
                 >
-                  <EditIcon />
-                </IconButton>
+                  <Tooltip title="Edit" placement="bottom">
+                    <IconButton
+                      aria-label="edit"
+                      size="small"
+                      style={{ marginRight: 2 }}
+                      className={classes.editButton}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+
+                  <Tooltip
+                    title="Delete"
+                    placement="top"
+                    PopperProps={{
+                      popperOptions: {
+                        modifiers: [
+                          {
+                            name: "offset",
+                            options: {
+                              offset: [-5, -5], // adjust the margin here
+                            },
+                          },
+                        ],
+                      },
+                    }}
+                  >
+                    <IconButton
+                      aria-label="delete"
+                      size="small"
+                      style={{ color: "red", marginRight: 8, marginBottom: 6 }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
+                </div>
               </div>
             </Card>
           </Grid>
         ))}
       </Grid>
+
       <div className={classes.delButton}>
         <Button
           disableRipple
@@ -490,14 +520,19 @@ const Profile = () => {
           color="secondary"
           className={classes.deleteButton}
           onClick={handleDeleteAccount}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
         >
           Delete Account
           <IconButton
-            disableRipple
+            disableTouchRipple
             aria-label="delete-account"
-            className={classes.deleteButton}
+            style={{ padding: 0, marginLeft: 5 }}
           >
-            <DeleteIcon />
+            <DeleteIcon style={{ fontSize: 20, color: "#FFFFFF" }} />
           </IconButton>
         </Button>
       </div>
