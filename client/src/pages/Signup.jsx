@@ -41,18 +41,17 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   form: {
-    width: "100%", // Fix IE 11 issue.
+  width: "100%",
     marginTop: theme.spacing(2),
   },
   formContainer: {
     width: "100%",
     maxWidth: 400,
     margin: "auto", // Center the form horizontally
-    padding: theme.spacing(3),
+    padding: theme.spacing(4),
     borderRadius: theme.shape.borderRadius,
     border: "1px solid #7b1fa2 ",
     boxShadow: `0 0 4px ${theme.palette.primary.main}`,
-
   },
   submit: {
     margin: theme.spacing(3, 0, 0),
@@ -247,10 +246,11 @@ const Signup = () => {
         <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
-          Sign up
-        </Typography>
+
         <div className={classes.formContainer}>
+          <Typography component="h1" variant="h4">
+            Sign up
+          </Typography>
           <form className={classes.form} noValidate>
             <Grid container spacing={2}>
               <Grid item xs={12}>

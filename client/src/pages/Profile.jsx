@@ -301,36 +301,8 @@ const Profile = () => {
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [chat, setChat] = useState(true);
-
-  const cards = [
-    {
-      id: 1,
-      title: "Modern House",
-      description:
-        "Description of the listing goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-      price: "$100",
-      image:
-        "https://static.vecteezy.com/system/resources/previews/023/309/047/non_2x/ai-generative-exterior-of-modern-luxury-house-with-garden-and-beautiful-sky-photo.jpg",
-    },
-    {
-      id: 2,
-      title: "Luxury Apartment",
-      description:
-        "Another listing description. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-      price: "$150",
-      image:
-        "https://static.vecteezy.com/system/resources/previews/023/309/047/non_2x/ai-generative-exterior-of-modern-luxury-house-with-garden-and-beautiful-sky-photo.jpg",
-    },
-    {
-      id: 3,
-      title: "Cozy Cottage",
-      description:
-        "Third listing description. Excepteur sint oat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-      price: "$80",
-      image:
-        "https://static.vecteezy.com/system/resources/previews/023/309/047/non_2x/ai-generative-exterior-of-modern-luxury-house-with-garden-and-beautiful-sky-photo.jpg",
-    },
-  ];
+  const [showListingserror, setShowListingsError] = useState(false);
+  const [userListings, setUserListings] = useState([]);
 
   const handleCreateListing = () => {
     // Handle logic for creating a new listing
@@ -431,6 +403,20 @@ const Profile = () => {
       navigate("/signin");
     } catch (error) {
       dispatch(deleteUserFailure(error.message));
+    }
+  };
+
+  const handleShowListings = async () => {
+    try {
+      setShowListingsError(false);
+      const res = await fetch(`/api/user/listings/${currentUser.id}`);
+      const data = await res.json();
+      if (!data.success) {
+      }
+      setUserListings(data);
+      console.log(data);
+    } catch (error) {
+      setShowListingsError(true);
     }
   };
 
@@ -558,78 +544,107 @@ const Profile = () => {
       </div>
 
       <Grid container spacing={0}>
-        <Typography
-          variant="h5"
+        <Button
+          variant="text"
+          size="large"
           color="secondary"
-          style={{ marginLeft: "10px", fontWeight: 600, color: "#7b1fa2" }}
+          style={{
+            marginLeft: "10px",
+            marginBottom: "5px",
+            fontWeight: 600,
+            color: "#7b1fa2",
+          }}
+          onClick={handleShowListings}
         >
-          My Listings
-        </Typography>
+          Show Listings
+        </Button>
+        <div className="mx-2 mt-5 ">
+          {showListingserror ? (
+            <Typography variant="body2" color="error" gutterBottom>
+              Error showing listings!
+            </Typography>
+          ) : (
+            ""
+          )}
+        </div>
 
-        {cards.map((card) => (
-          <Grid item xs={12} key={card.id}>
-            <Card className={classes.card}>
-              <CardMedia
-                className={classes.cardMedia}
-                image={card.image}
-                title={card.title}
-              />
-              <div className={classes.cardDetails}>
-                <CardContent className={classes.cardContent}>
-                  <Typography component="h2" variant="h6">
-                    {card.title}
-                  </Typography>
-                  <Typography variant="body2" paragraph>
-                    {card.description}
-                  </Typography>
-                  <Typography variant="subtitle1" color="textSecondary">
-                    {card.price}
-                  </Typography>
-                </CardContent>
-                <div
-                  className={classes.cardActions}
-                  style={{ display: "flex", justifyContent: "flex-end" }}
-                >
-                  <Tooltip title="Edit" placement="bottom">
-                    <IconButton
-                      aria-label="edit"
-                      size="small"
-                      style={{ marginRight: 2 }}
-                      className={classes.editButton}
+        {userListings &&
+          userListings.length > 0 &&
+          userListings.map((listing) => (
+            <Grid item xs={12} key={listing._id}>
+              <Card className={classes.card}>
+                <CardMedia
+                  className={classes.cardMedia}
+                  image={listing.imageUrls[0]}
+                />
+                <div className={classes.cardDetails}>
+                  <CardContent className={classes.cardContent}>
+                    <Typography
+                      component="h2"
+                      variant="h6"
+                      style={{ color: "#7b1fa2", fontWeight: 600 }}
                     >
-                      <EditIcon sx={{ fontSize: 30 }} />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip
-                    title="Delete"
-                    placement="top"
-                    PopperProps={{
-                      popperOptions: {
-                        modifiers: [
-                          {
-                            name: "offset",
-                            options: {
-                              offset: [-5, -5], // adjust the margin here
-                            },
-                          },
-                        ],
-                      },
-                    }}
+                      {listing.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      paragraph
+                      style={{ color: "#7b1fa2", fontWeight: 500 }}
+                    >
+                      {listing.description}
+                    </Typography>
+                    <Typography variant="subtitle2" color="textSecondary">
+                      Rs {listing.regularPrice}
+                    </Typography>
+                  </CardContent>
+                  <div
+                    className={classes.cardActions}
+                    style={{ display: "flex", justifyContent: "flex-end" }}
                   >
-                    <IconButton
-                      aria-label="delete"
-                      size="small"
-                      style={{ color: "red", marginRight: 8, marginBottom: 6 }}
+                    <Tooltip title="Edit" placement="bottom">
+                      <IconButton
+                        aria-label="edit"
+                        size="small"
+                        style={{ marginRight: 2 }}
+                        className={classes.editButton}
+                      >
+                        <EditIcon sx={{ fontSize: 24 }} />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip
+                      title="Delete"
+                      placement="top"
+                      PopperProps={{
+                        popperOptions: {
+                          modifiers: [
+                            {
+                              name: "offset",
+                              options: {
+                                offset: [-5, -5], // adjust the margin here
+                              },
+                            },
+                          ],
+                        },
+                      }}
                     >
-                      <DeleteIcon sx={{ fontSize: 30 }} />
-                    </IconButton>
-                  </Tooltip>
+                      <IconButton
+                        aria-label="delete"
+                        size="small"
+                        style={{
+                          color: "red",
+                          marginRight: 8,
+                          marginBottom: 6,
+                        }}
+                      >
+                        <DeleteIcon sx={{ fontSize: 24 }} />
+                      </IconButton>
+                    </Tooltip>
+                  </div>
                 </div>
-              </div>
-            </Card>
-          </Grid>
-        ))}
+              </Card>
+            </Grid>
+          ))}
       </Grid>
 
       <div className={classes.delButton}>
@@ -658,7 +673,7 @@ const Profile = () => {
         </Button>
       </div>
 
-      <div className={classes.chat}>
+      {/* <div className={classes.chat}>
         <div className="messages">
           <h1>Messages</h1>
           <div className="message">
@@ -764,7 +779,7 @@ const Profile = () => {
             </div>
           </div>
         )}
-      </div>
+      </div> */}
     </Container>
   );
 };
