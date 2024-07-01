@@ -301,7 +301,7 @@ const Profile = () => {
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
   const [chat, setChat] = useState(true);
-  const [showListingserror, setShowListingsError] = useState(false);
+  const [showListingsError, setShowListingsError] = useState(false);
   const [userListings, setUserListings] = useState([]);
 
   const handleCreateListing = () => {
@@ -419,6 +419,15 @@ const Profile = () => {
       setShowListingsError(true);
     }
   };
+
+  const handleDeleteListings = async () => {
+    try {
+      
+    } catch (error) {
+      console.log(error);
+      
+    }
+  }
 
   return (
     <Container maxWidth="md" className={classes.root}>
@@ -559,7 +568,7 @@ const Profile = () => {
           Show Listings
         </Button>
         <div className="mx-2 mt-5 ">
-          {showListingserror ? (
+          {showListingsError ? (
             <Typography variant="body2" color="error" gutterBottom>
               Error showing listings!
             </Typography>
@@ -589,13 +598,23 @@ const Profile = () => {
                     <Typography
                       variant="body2"
                       paragraph
+                      align="justify"
                       style={{ color: "#7b1fa2", fontWeight: 500 }}
                     >
                       {listing.description}
                     </Typography>
+
                     <Typography variant="subtitle2" color="textSecondary">
-                      Rs {listing.regularPrice}
+                      {listing.type === "rent"
+                        ? `Monthly Rent: Rs ${listing.regularPrice}`
+                        : `Sale Price: Rs ${listing.regularPrice}`}
                     </Typography>
+
+                    {listing.offer && (
+                      <Typography variant="subtitle2" color="textSecondary">
+                        Discounted Price: Rs {listing.discountPrice}
+                      </Typography>
+                    )}
                   </CardContent>
                   <div
                     className={classes.cardActions}
@@ -634,8 +653,9 @@ const Profile = () => {
                         style={{
                           color: "red",
                           marginRight: 8,
-                          marginBottom: 6,
+                          marginTop: -8,
                         }}
+                        onClick={handleDeleteListings}
                       >
                         <DeleteIcon sx={{ fontSize: 24 }} />
                       </IconButton>

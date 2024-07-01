@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   paper: {
-    marginTop: theme.spacing(9),
+    marginTop: theme.spacing(18),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme) => ({
   },
   form: {
     width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(1),
   },
   formContainer: {
     width: "100%",
@@ -221,6 +221,10 @@ const Signin = () => {
     }
   };
 
+  useEffect(() => {
+    handleRegularSignIn();
+  }, []);
+
   const handleGoogleSignIn = () => {
     console.log("Sign in with Google clicked");
     navigate("/");
@@ -230,9 +234,9 @@ const Signin = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+        {/* <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
-        </Avatar>
+        </Avatar> */}
 
         <div className={classes.formContainer}>
           <Typography

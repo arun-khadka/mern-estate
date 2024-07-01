@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   paper: {
-    marginTop: theme.spacing(9),
+    marginTop: theme.spacing(18),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -41,8 +41,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   form: {
-  width: "100%",
-    marginTop: theme.spacing(2),
+    width: "100%",
+    marginTop: theme.spacing(1),
   },
   formContainer: {
     width: "100%",
@@ -235,6 +235,10 @@ const Signup = () => {
   };
   console.log(formData);
 
+  useEffect(() => {
+    handleRegularSignUp();
+  }, []);
+
   const handleGoogleSignIn = () => {
     console.log("Sign in with Google clicked");
     navigate("/");
@@ -243,9 +247,9 @@ const Signup = () => {
     <Container component="main" maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+        {/* <Avatar className={classes.avatar}>
           <LockOutlinedIcon />
-        </Avatar>
+        </Avatar> */}
 
         <div className={classes.formContainer}>
           <Typography component="h1" variant="h4">
