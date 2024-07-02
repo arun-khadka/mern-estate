@@ -15,6 +15,7 @@ import {
   CardContent,
   CardMedia,
   Grid,
+  Box,
   IconButton,
   Avatar,
 } from "@material-ui/core";
@@ -314,12 +315,6 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (file) {
-      handleFileUpload(file);
-    }
-  }, [file]);
-
-  useEffect(() => {
     console.log("Current User:", currentUser); // Debugging line
   }, [currentUser]);
 
@@ -347,6 +342,12 @@ const Profile = () => {
       }
     );
   };
+
+  useEffect(() => {
+    if (file) {
+      handleFileUpload(file);
+    }
+  }, [file]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
@@ -420,14 +421,22 @@ const Profile = () => {
     }
   };
 
-  const handleDeleteListings = async () => {
+  const handleDeleteListing = async (listingId) => {
     try {
-      
+      const res = await fetch(`/api/listing/delete/${listingId}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (!data.success) {
+        console.log(data.message);
+      }
+      setUserListings((prev) =>
+        prev.filter((listing) => listing._id !== listingId)
+      );
     } catch (error) {
-      console.log(error);
-      
+      console.log(error.message);
     }
-  }
+  };
 
   return (
     <Container maxWidth="md" className={classes.root}>
@@ -615,6 +624,27 @@ const Profile = () => {
                         Discounted Price: Rs {listing.discountPrice}
                       </Typography>
                     )}
+
+                    <Box display="flex" flexDirection="row" mt={2}>
+                      <Box flex={1}>
+                        <Typography
+                          variant="subtitle2"
+                          color="textPrimary"
+                          style={{ fontSize: "14px" }}
+                        >
+                          Bedrooms: {listing.bedrooms}
+                        </Typography>
+                      </Box>
+                      <Box flex={1}>
+                        <Typography
+                          variant="subtitle2"
+                          color="textPrimary"
+                          style={{ fontSize: "14px" }}
+                        >
+                          Bathrooms: {listing.bathrooms}
+                        </Typography>
+                      </Box>
+                    </Box>
                   </CardContent>
                   <div
                     className={classes.cardActions}
@@ -624,7 +654,7 @@ const Profile = () => {
                       <IconButton
                         aria-label="edit"
                         size="small"
-                        style={{ marginRight: 2 }}
+                        style={{ marginRight: 1 }}
                         className={classes.editButton}
                       >
                         <EditIcon sx={{ fontSize: 24 }} />
@@ -653,11 +683,11 @@ const Profile = () => {
                         style={{
                           color: "red",
                           marginRight: 8,
-                          marginTop: -8,
+                          marginTop: -29,
                         }}
-                        onClick={handleDeleteListings}
+                        onClick={() => handleDeleteListing(listing._id)}
                       >
-                        <DeleteIcon sx={{ fontSize: 24 }} />
+                        <DeleteIcon sx={{ fontSize: 24, marginBottom: 4 }} />
                       </IconButton>
                     </Tooltip>
                   </div>
