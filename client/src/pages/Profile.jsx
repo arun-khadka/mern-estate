@@ -657,7 +657,9 @@ const Profile = () => {
                         style={{ marginRight: 1 }}
                         className={classes.editButton}
                       >
-                        <EditIcon sx={{ fontSize: 24 }} />
+                        <Link to={`/update-listing/${listing._id}`}>
+                          <EditIcon sx={{ fontSize: 24 }} />
+                        </Link>
                       </IconButton>
                     </Tooltip>
 
