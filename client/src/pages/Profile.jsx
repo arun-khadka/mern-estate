@@ -35,6 +35,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import { app } from "../firebase";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -575,6 +576,7 @@ const Profile = () => {
           onClick={handleShowListings}
         >
           Show Listings
+          <ExpandMoreIcon />
         </Button>
         <div className="mx-2 mt-5 ">
           {showListingsError ? (

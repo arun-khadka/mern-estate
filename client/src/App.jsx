@@ -6,7 +6,7 @@ import About from "./pages/About";
 import Signin from "./pages/Signin";
 import Signup from "./pages/Signup";
 import Profile from "./pages/Profile";
-import Listings from "./pages/Listings";
+import Listing from "./pages/Listing";
 import Error from "./pages/Error";
 import MainLayout from "./pages/MainLayout";
 import PrivateRoute from "./components/PrivateRoute";
@@ -36,7 +36,7 @@ function App() {
           <Route path="/" element={<MainLayout />}>
             <Route index element={<Home />} />
             <Route path="/about" element={<About />} />
-            <Route path="/listings" element={<Listings />} />
+            <Route path="/listing/:listingId" element={<Listing />} />
             <Route element={<PrivateRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/create-listing" element={<CreateListing />} />

@@ -221,10 +221,6 @@ const Signin = () => {
     }
   };
 
-  useEffect(() => {
-    handleRegularSignIn();
-  }, []);
-
   const handleGoogleSignIn = () => {
     console.log("Sign in with Google clicked");
     navigate("/");

@@ -235,10 +235,6 @@ const Signup = () => {
   };
   console.log(formData);
 
-  useEffect(() => {
-    handleRegularSignUp();
-  }, []);
-
   const handleGoogleSignIn = () => {
     console.log("Sign in with Google clicked");
     navigate("/");
