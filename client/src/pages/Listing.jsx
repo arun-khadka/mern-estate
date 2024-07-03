@@ -5,7 +5,7 @@ import SwiperCore from "swiper";
 import { Navigation } from "swiper/modules";
 import "swiper/css/bundle";
 import { useSelector } from "react-redux";
-
+import Map from "../components/Map";
 import {
   FaBath,
   FaBed,
@@ -14,9 +14,11 @@ import {
   FaParking,
   FaShare,
 } from "react-icons/fa";
+import { CircularProgress } from "@mui/material";
 import { ListItemIcon } from "@material-ui/core";
 import Contact from "../components/Contact";
 import {
+  Button,
   IconButton,
   Tooltip,
   Box,
@@ -86,9 +88,11 @@ const Listing = () => {
 
   return (
     <main>
-      {loading && <p className="text-center my-7 text-2xl">Loading...</p>}
+      {loading && <CircularProgress className="mx-auto my-7" />}
       {error && (
-        <p className="text-center my-7 text-2xl">Something went wrong!</p>
+        <Typography variant="h5" align="center" className="my-7">
+          Something went wrong!
+        </Typography>
       )}
 
       {listing && !loading && !error && (
@@ -107,7 +111,12 @@ const Listing = () => {
                 />
               </Paper>
             </Box>
-            <Box sx={{ width: "25%", marginTop: "80px" }}>
+            <Box
+              sx={{
+                width: "25%",
+                marginTop: "80px",
+              }}
+            >
               <Swiper
                 direction="vertical"
                 spaceBetween={5}
@@ -137,6 +146,7 @@ const Listing = () => {
             sx={{
               display: "flex",
               flexDirection: "column",
+              backgroundColor: "#fcf5f3",
               maxWidth: "lg",
               mx: "auto",
               p: 3,
@@ -178,10 +188,10 @@ const Listing = () => {
                 {listing.description}
               </Typography>
               <List>
-                <Grid container spacing={2}>
+                <Grid container spacing={0}>
                   <Grid item xs={12} sm={6}>
                     <ListItem>
-                      <ListItemIcon>
+                      <ListItemIcon style={{ color: "#7b1fa2" }}>
                         <FaBed />
                       </ListItemIcon>
                       <ListItemText
@@ -193,7 +203,7 @@ const Listing = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <ListItem>
-                      <ListItemIcon>
+                      <ListItemIcon style={{ color: "#7b1fa2" }}>
                         <FaBath />
                       </ListItemIcon>
                       <ListItemText
@@ -205,7 +215,7 @@ const Listing = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <ListItem>
-                      <ListItemIcon>
+                      <ListItemIcon style={{ color: "#7b1fa2" }}>
                         <FaParking />
                       </ListItemIcon>
                       <ListItemText
@@ -217,7 +227,7 @@ const Listing = () => {
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <ListItem>
-                      <ListItemIcon>
+                      <ListItemIcon style={{ color: "#7b1fa2" }}>
                         <FaChair />
                       </ListItemIcon>
                       <ListItemText
@@ -235,12 +245,14 @@ const Listing = () => {
               {currentUser &&
                 listing.userRef !== currentUser._id &&
                 !contact && (
-                  <button
+                  <Button
+                    variant="contained"
+                    size="large"
+                    style={{ backgroundColor: "#7b1fa2" }}
                     onClick={() => setContact(true)}
-                    className="bg-slate-700 text-white rounded-lg uppercase p-3 hover:opacity-95"
                   >
                     Contact Landlord
-                  </button>
+                  </Button>
                 )}
               <Tooltip title="Copy link">
                 <IconButton onClick={handleCopy}>
@@ -254,6 +266,9 @@ const Listing = () => {
           </Box>
         </div>
       )}
+      <Box style={{ flex: 2, backgroundColor: "#fcf5f3", height: "100%" }}>
+        <Map />
+      </Box>
     </main>
   );
 };
